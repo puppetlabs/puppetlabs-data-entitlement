@@ -1,33 +1,33 @@
 require 'spec_helper'
 
-describe 'hdp::app_stack' do
+describe 'data_entitlement::app_stack' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
       let(:facts) { os_facts }
-      let(:params) { { 'dns_name' => 'hdp.test.com', 'ui_use_tls' => false } }
+      let(:params) { { 'dns_name' => 'data_entitlement.test.com', 'ui_use_tls' => false } }
 
       context 'with defaults' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_group('docker').with_ensure('present') }
         it { is_expected.to contain_class('docker').with_log_driver('journald') }
         it { is_expected.to contain_class('docker::compose').with_ensure('present') }
-        it { is_expected.to contain_file('/opt/puppetlabs/hdp').with_ensure('directory') }
+        it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement').with_ensure('directory') }
         it {
-          is_expected.to contain_docker_compose('hdp')
-            .with_compose_files(['/opt/puppetlabs/hdp/docker-compose.yaml'])
-            .that_requires('File[/opt/puppetlabs/hdp/docker-compose.yaml]')
-            .that_subscribes_to('File[/opt/puppetlabs/hdp/docker-compose.yaml]')
+          is_expected.to contain_docker_compose('data_entitlement')
+            .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
+            .that_requires('File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]')
+            .that_subscribes_to('File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]')
         }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
-            .with_content(%r{NAME=hdp\.test\.com})
+            .with_content(%r{NAME=data_entitlement\.test\.com})
             .with_content(%r{- "80:80"})
         }
         dir_list = [
-          '/opt/puppetlabs/hdp',
-          '/opt/puppetlabs/hdp/ssl',
+          '/opt/puppetlabs/data_entitlement',
+          '/opt/puppetlabs/data_entitlement/ssl',
         ]
 
         dir_list.each do |d|
@@ -51,7 +51,7 @@ describe 'hdp::app_stack' do
 
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'ui_use_tls' => true,
               'ui_cert_files_puppet_managed' => true,
               'ui_key_file' => '/tmp/ui-cert.key',
@@ -61,25 +61,25 @@ describe 'hdp::app_stack' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_docker_compose('hdp')
-              .with_compose_files(['/opt/puppetlabs/hdp/docker-compose.yaml'])
+            is_expected.to contain_docker_compose('data_entitlement')
+              .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
               .that_requires(
                 [
                   'File[/tmp/ui-cert.key]',
                   'File[/tmp/ui-cert.pem]',
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
               .that_subscribes_to(
                 [
                   'File[/tmp/ui-cert.key]',
                   'File[/tmp/ui-cert.pem]',
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "80:80"})
               .with_content(%r{- "443:443"})
           }
@@ -88,34 +88,34 @@ describe 'hdp::app_stack' do
         context 'with ui tls enabled - default key and cert' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'ui_use_tls' => true,
             }
           end
-          let(:node) { 'hdp.example' }
+          let(:node) { 'data_entitlement.example' }
 
-          ## Make sure this isn't hdp-test
+          ## Make sure this isn't data_entitlement-test
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_docker_compose('hdp')
-              .with_compose_files(['/opt/puppetlabs/hdp/docker-compose.yaml'])
+            is_expected.to contain_docker_compose('data_entitlement')
+              .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
               .that_requires(
                 [
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
               .that_subscribes_to(
                 [
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "80:80"})
               .with_content(%r{- "443:443"})
-              .with_content(%r{- ".*hdp\.example.*:/etc/ssl/key\.pem:ro"})
-              .with_content(%r{- ".*hdp\.example.*:/etc/ssl/cert\.pem:ro"})
+              .with_content(%r{- ".*data_entitlement\.example.*:/etc/ssl/key\.pem:ro"})
+              .with_content(%r{- ".*data_entitlement\.example.*:/etc/ssl/cert\.pem:ro"})
           }
         end
 
@@ -130,7 +130,7 @@ describe 'hdp::app_stack' do
 
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'ui_use_tls' => true,
               'ui_cert_files_puppet_managed' => true,
               'ui_ca_cert_file' => '/tmp/ui-ca.pem',
@@ -141,14 +141,14 @@ describe 'hdp::app_stack' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_docker_compose('hdp')
-              .with_compose_files(['/opt/puppetlabs/hdp/docker-compose.yaml'])
+            is_expected.to contain_docker_compose('data_entitlement')
+              .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
               .that_requires(
                 [
                   'File[/tmp/ui-ca.pem]',
                   'File[/tmp/ui-cert.key]',
                   'File[/tmp/ui-cert.pem]',
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
               .that_subscribes_to(
@@ -156,7 +156,7 @@ describe 'hdp::app_stack' do
                   'File[/tmp/ui-ca.pem]',
                   'File[/tmp/ui-cert.key]',
                   'File[/tmp/ui-cert.pem]',
-                  'File[/opt/puppetlabs/hdp/docker-compose.yaml]',
+                  'File[/opt/puppetlabs/data_entitlement/docker-compose.yaml]',
                 ],
               )
           }
@@ -170,11 +170,11 @@ describe 'hdp::app_stack' do
               file { "/tmp/ui-cert.pem": ensure => present }
             EOS
           end
-          let(:trusted_facts) { { 'certname' => 'true.hdp' } }
-          let(:node) { 'true.hdp' }
+          let(:trusted_facts) { { 'certname' => 'true.data_entitlement' } }
+          let(:node) { 'true.data_entitlement' }
           let(:params) do
             {
-              'dns_name' => 'true.hdp',
+              'dns_name' => 'true.data_entitlement',
               'ui_use_tls' => true,
               'ui_cert_files_puppet_managed' => false,
               'ui_ca_cert_file' => '/tmp/ui-ca.pem',
@@ -183,21 +183,21 @@ describe 'hdp::app_stack' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_docker_compose('hdp')
-              .with_compose_files(['/opt/puppetlabs/hdp/docker-compose.yaml'])
+            is_expected.to contain_docker_compose('data_entitlement')
+              .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
           }
-          it { is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/private_keys/true\.hdp\.pem:/etc/ssl/key\.pem:ro\"}) }
-          it { is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/certs/true\.hdp\.pem:/etc/ssl/cert\.pem:ro\"}) }
+          it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/private_keys/true\.data_entitlement\.pem:/etc/ssl/key\.pem:ro\"}) }
+          it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/certs/true\.data_entitlement\.pem:/etc/ssl/cert\.pem:ro\"}) }
         end
       end
 
       context 'with seperate versions' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'image_repository' => 'hub.docker.com',
             'image_prefix' => '',
-            'hdp_version' => 'foo',
+            'data_entitlement_version' => 'foo',
             'ui_version' => 'bar',
             'frontend_version' => 'baz',
           }
@@ -205,7 +205,7 @@ describe 'hdp::app_stack' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
             .with_content(%r{hub.docker.com/data-ingestion:foo})
@@ -217,16 +217,16 @@ describe 'hdp::app_stack' do
       context 'with same versions' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'image_repository' => 'hub.docker.com',
             'image_prefix' => '',
-            'hdp_version' => 'foo',
+            'data_entitlement_version' => 'foo',
           }
         end
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
             .with_content(%r{hub.docker.com/data-ingestion:foo})
@@ -237,7 +237,7 @@ describe 'hdp::app_stack' do
       context 'with super version' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'image_repository' => 'hub.docker.com',
             'image_prefix' => '',
             'version' => 'baz',
@@ -246,7 +246,7 @@ describe 'hdp::app_stack' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
             .with_content(%r{hub.docker.com/data-ingestion:baz})
@@ -255,18 +255,18 @@ describe 'hdp::app_stack' do
         }
       end
 
-      context 'hdp admin config options' do
+      context 'data_entitlement admin config options' do
         context 'set prometheus namespace' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'prometheus_namespace' => 'foo',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_ADMIN_PROMETHEUS_NAMESPACE=foo"})
           }
         end
@@ -274,14 +274,14 @@ describe 'hdp::app_stack' do
         context 'set access log level - non-default' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'access_log_level' => 'all',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_ADMIN_ACCESS_LOG_LEVEL=all"})
           }
         end
@@ -289,13 +289,13 @@ describe 'hdp::app_stack' do
         context 'set access log level - default' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_ADMIN_ACCESS_LOG_LEVEL=admin"})
           }
         end
@@ -305,7 +305,7 @@ describe 'hdp::app_stack' do
         context 'set extra hosts' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'prometheus_namespace' => 'foo',
               'extra_hosts' => { 'foo' => '127.0.0.1', 'bar' => '1.1.1.1' },
             }
@@ -313,15 +313,15 @@ describe 'hdp::app_stack' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{extra_hosts:})
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{foo:127\.0\.0\.1})
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{bar:1\.1\.1\.1})
           }
         end
@@ -329,7 +329,7 @@ describe 'hdp::app_stack' do
         context 'no extra hosts' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'prometheus_namespace' => 'foo',
               'extra_hosts' => {},
             }
@@ -337,7 +337,7 @@ describe 'hdp::app_stack' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .without_content(%r{extra_hosts:})
           }
         end
@@ -348,27 +348,27 @@ describe 'hdp::app_stack' do
           context 'default' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "redis:6.2.4-buster"}) ## Tests will break if image updates. Good or bad? Leaning good.
             }
           end
           context 'set' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
                 'redis_image' => 'test/redis:latest',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "test/redis:latest"})
             }
           end
@@ -378,27 +378,27 @@ describe 'hdp::app_stack' do
           context 'default' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.1"})
             }
           end
           context 'set' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
                 'elasticsearch_image' => 'test/es:latest',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "test/es:latest"})
             }
           end
@@ -408,27 +408,27 @@ describe 'hdp::app_stack' do
           context 'default' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "minio/minio:RELEASE.2021-04-22T15-44-28Z"})
             }
           end
           context 'set' do
             let(:params) do
               {
-                'dns_name' => 'hdp.test.com',
+                'dns_name' => 'data_entitlement.test.com',
                 'minio_image' => 'test/minio:latest',
               }
             end
 
             it { is_expected.to compile.with_all_deps }
             it {
-              is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+              is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
                 .with_content(%r{image: "test/minio:latest"})
             }
           end
@@ -439,13 +439,13 @@ describe 'hdp::app_stack' do
         context 'default' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .without_content(%r{HDP_HTTP_QUERY_USER=})
               .without_content(%r{HDP_HTTP_QUERY_PASSWORD=})
               .without_content(%r{HDP_HTTP_QUERY_SSO_ISSUER=})
@@ -458,16 +458,16 @@ describe 'hdp::app_stack' do
         context 'oidc' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_auth' => 'oidc',
-              'hdp_query_oidc_issuer' => 'foo',
-              'hdp_query_oidc_client_id' => 'bar',
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_auth' => 'oidc',
+              'data_entitlement_query_oidc_issuer' => 'foo',
+              'data_entitlement_query_oidc_client_id' => 'bar',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .without_content(%r{HDP_HTTP_QUERY_USER=})
               .without_content(%r{HDP_HTTP_QUERY_PASSWORD=})
               .with_content(%r{HDP_HTTP_QUERY_SSO_ISSUER=foo})
@@ -479,15 +479,15 @@ describe 'hdp::app_stack' do
         context 'pe_rbac - defaults' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_auth' => 'pe_rbac',
-              'hdp_query_pe_rbac_service' => 'https://puppet:4433/rbac-api',
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_auth' => 'pe_rbac',
+              'data_entitlement_query_pe_rbac_service' => 'https://puppet:4433/rbac-api',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .without_content(%r{HDP_HTTP_QUERY_USER=})
               .without_content(%r{HDP_HTTP_QUERY_PASSWORD=})
               .with_content(%r{HDP_HTTP_QUERY_PE_RBAC_SERVICE_LOCATION=https://puppet:4433/rbac-api})
@@ -498,17 +498,17 @@ describe 'hdp::app_stack' do
         context 'pe_rbac - specified, system CA' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_auth' => 'pe_rbac',
-              'hdp_query_pe_rbac_service' => 'https://puppet:4433/rbac-api',
-              'hdp_query_pe_rbac_role_id' => 2,
-              'hdp_query_pe_rbac_ca_cert_file' => '-',
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_auth' => 'pe_rbac',
+              'data_entitlement_query_pe_rbac_service' => 'https://puppet:4433/rbac-api',
+              'data_entitlement_query_pe_rbac_role_id' => 2,
+              'data_entitlement_query_pe_rbac_ca_cert_file' => '-',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .without_content(%r{HDP_HTTP_QUERY_USER=})
               .without_content(%r{HDP_HTTP_QUERY_PASSWORD=})
               .with_content(%r{HDP_HTTP_QUERY_PE_RBAC_SERVICE_LOCATION=https://puppet:4433/rbac-api})
@@ -519,16 +519,16 @@ describe 'hdp::app_stack' do
         context 'basic - specified' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_auth' => 'basic_auth',
-              'hdp_query_username' => 'super-user',
-              'hdp_query_password' => sensitive('admin-password'),
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_auth' => 'basic_auth',
+              'data_entitlement_query_username' => 'super-user',
+              'data_entitlement_query_password' => sensitive('admin-password'),
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_HTTP_QUERY_USER=super-user"})
               .with_content(%r{- "HDP_HTTP_QUERY_PASSWORD=admin-password"})
               .without_content(%r{HDP_HTTP_QUERY_SSO_ISSUER=})
@@ -542,16 +542,16 @@ describe 'hdp::app_stack' do
         context 'basic - specified hash' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_auth' => 'basic_auth',
-              'hdp_query_username' => 'super-user',
-              'hdp_query_password' => sensitive('$6$foo$bar'),
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_auth' => 'basic_auth',
+              'data_entitlement_query_username' => 'super-user',
+              'data_entitlement_query_password' => sensitive('$6$foo$bar'),
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_HTTP_QUERY_USER=super-user"})
               .with_content(%r{- "HDP_HTTP_QUERY_PASSWORD=\$\$6\$\$foo\$\$bar"})
               .without_content(%r{HDP_HTTP_QUERY_SSO_ISSUER=})
@@ -564,15 +564,15 @@ describe 'hdp::app_stack' do
         context 'basic - old behavior' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
-              'hdp_query_username' => 'super-user',
-              'hdp_query_password' => sensitive('admin-password'),
+              'dns_name' => 'data_entitlement.test.com',
+              'data_entitlement_query_username' => 'super-user',
+              'data_entitlement_query_password' => sensitive('admin-password'),
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_HTTP_QUERY_USER=super-user"})
               .with_content(%r{- "HDP_HTTP_QUERY_PASSWORD=admin-password"})
               .without_content(%r{HDP_HTTP_QUERY_SSO_ISSUER=})
@@ -586,35 +586,35 @@ describe 'hdp::app_stack' do
       context 'dashboard url' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'dashboard_url' => 'https://foo.com',
           }
         end
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
             .with_content(%r{HDP_JOBS_DASHBOARD_URL=https://foo\.com})
         }
       end
       context 'docker data dir' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
-            'data_dir' => '/opt/puppetlabs/hdp/volumes',
+            'dns_name' => 'data_entitlement.test.com',
+            'data_dir' => '/opt/puppetlabs/data_entitlement/volumes',
           }
         end
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
         }
       end
       context 'trust-on-first-use failures' do
         context 'Nothing specified' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'allow_trust_on_first_use' => false,
               ## if ^ is false, we should fail compilation if certs keys and whatnot are not set.
             }
@@ -625,20 +625,20 @@ describe 'hdp::app_stack' do
         context 'All specified' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'allow_trust_on_first_use' => false,
               'ca_cert_file' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
-              'cert_file' => '/etc/puppetlabs/puppet/ssl/certs/hdp.test.com.pem',
-              'key_file' => '/etc/puppetlabs/puppet/ssl/private_keys/hdp.test.com.pem',
+              'cert_file' => '/etc/puppetlabs/puppet/ssl/certs/data_entitlement.test.com.pem',
+              'key_file' => '/etc/puppetlabs/puppet/ssl/private_keys/data_entitlement.test.com.pem',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
               .with_content(%r{- "HDP_HTTP_UPLOAD_CACERTFILE=/etc/puppetlabs/puppet/ssl/certs/ca\.pem"})
-              .with_content(%r{- "HDP_HTTP_UPLOAD_CERTFILE=/etc/puppetlabs/puppet/ssl/certs/hdp\.test\.com\.pem"})
-              .with_content(%r{- "HDP_HTTP_UPLOAD_KEYFILE=/etc/puppetlabs/puppet/ssl/private_keys/hdp\.test\.com\.pem"})
+              .with_content(%r{- "HDP_HTTP_UPLOAD_CERTFILE=/etc/puppetlabs/puppet/ssl/certs/data_entitlement\.test\.com\.pem"})
+              .with_content(%r{- "HDP_HTTP_UPLOAD_KEYFILE=/etc/puppetlabs/puppet/ssl/private_keys/data_entitlement\.test\.com\.pem"})
           }
         end
       end

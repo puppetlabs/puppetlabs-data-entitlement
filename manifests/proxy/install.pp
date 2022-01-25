@@ -1,20 +1,20 @@
 # @api private
-class hdp::proxy::install () {
-  if $hdp::proxy::create_docker_group and $hdp::proxy::manage_docker {
+class data_entitlement::proxy::install () {
+  if $data_entitlement::proxy::create_docker_group and $data_entitlement::proxy::manage_docker {
     group { 'docker':
       ensure => 'present',
       before => Class['docker'],
     }
   }
 
-  if $hdp::proxy::manage_docker {
+  if $data_entitlement::proxy::manage_docker {
     class { 'docker':
-      docker_users => $hdp::proxy::docker_users,
-      log_driver   => $hdp::proxy::log_driver,
+      docker_users => $data_entitlement::proxy::docker_users,
+      log_driver   => $data_entitlement::proxy::log_driver,
     }
     -> class { 'docker::compose':
       ensure  => present,
-      version => $hdp::proxy::compose_version,
+      version => $data_entitlement::proxy::compose_version,
     }
   }
 }

@@ -1,16 +1,16 @@
 
-# hdp
+# data_entitlement
 
-![](https://img.shields.io/puppetforge/pdk-version/puppetlabs/hdp.svg?style=popout)
-![](https://img.shields.io/puppetforge/v/puppetlabs/hdp.svg?style=popout)
-![](https://img.shields.io/puppetforge/dt/puppetlabs/hdp.svg?style=popout)
-[![Build Status](https://github.com/puppetlabs/puppetlabs-hdp/actions/workflows/pr_test.yml/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-hdp/actions/workflows/pr_test.yml)
+![](https://img.shields.io/puppetforge/pdk-version/puppetlabs/data_entitlement.svg?style=popout)
+![](https://img.shields.io/puppetforge/v/puppetlabs/data_entitlement.svg?style=popout)
+![](https://img.shields.io/puppetforge/dt/puppetlabs/data_entitlement.svg?style=popout)
+[![Build Status](https://github.com/puppetlabs/puppetlabs-data_entitlement/actions/workflows/pr_test.yml/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-data_entitlement/actions/workflows/pr_test.yml)
 
 This module will help you setup HDP's report processor on a PE Primary or Compiler. It will also help you setup a node to host the HDP application stack.
 
 - [Description](#description)
 - [Setup](#setup)
-  - [What hdp affects](#what-hdp-affects)
+  - [What data_entitlement affects](#what-data_entitlement-affects)
   - [Setup Requirements](#setup-requirements)
 - [Usage](#usage)
 - [Reference](#reference)
@@ -20,12 +20,12 @@ This module will help you setup HDP's report processor on a PE Primary or Compil
 
 There are two parts to getting started with HDP:
 
-1. Setting up a node to run HDP itself (`hdp::app_stack`)
-2. Configuring your PE Master and any Compilers to send data to HDP (`hdp::report_processor`)
+1. Setting up a node to run HDP itself (`data_entitlement::app_stack`)
+2. Configuring your PE Master and any Compilers to send data to HDP (`data_entitlement::report_processor`)
 
 ## Setup
 
-### What hdp affects
+### What data_entitlement affects
 
 This module will modify the puppet.conf configuration of any master or compiler that it is applied to. Additionally, it will install and configure Docker on the node running HDP.
 
@@ -39,8 +39,8 @@ See [REFERENCE.md](REFERENCE.md) for example usage.
 
 ## Reference
 
-A custom fact named `hdp-health` is included as part of this module. It is a structured fact that returns information about the currently running instance of HDP.
-Also, if this module is installed on a node, an `hdp` fact is included that will collect unmanaged resource information, but not land in PuppetDB.
+A custom fact named `data_entitlement-health` is included as part of this module. It is a structured fact that returns information about the currently running instance of HDP.
+Also, if this module is installed on a node, an `data_entitlement` fact is included that will collect unmanaged resource information, but not land in PuppetDB.
 
 This module is documented via `pdk bundle exec puppet strings generate --format markdown`. Please see [REFERENCE.md](REFERENCE.md) for more info.
 

@@ -1,7 +1,7 @@
 <%- | String $facts_terminus,
       String $facts_cache_terminus,
 | -%>
-# managed by puppet hdp module
+# managed by puppet data_entitlement module
 ---
 master:
   facts:

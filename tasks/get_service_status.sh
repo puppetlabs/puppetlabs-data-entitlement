@@ -5,5 +5,5 @@ set -e
 #
 # This task gets the status of the HDP docker-compose services.
 #
-cd /opt/puppetlabs/hdp
+cd /opt/puppetlabs/data_entitlement
 docker-compose ps

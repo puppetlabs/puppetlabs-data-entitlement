@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe 'hdp::proxy' do
+describe 'data_entitlement::proxy' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
       let(:facts) { os_facts }
       let(:params) do
         {
-          'dns_name' => 'hdp.test.com',
+          'dns_name' => 'data_entitlement.test.com',
           'token' => sensitive('token-town-usa'),
-          'hdp_address' => 'https://hdp.com',
+          'data_entitlement_address' => 'https://data_entitlement.com',
         }
       end
 
@@ -17,24 +17,24 @@ describe 'hdp::proxy' do
         it { is_expected.to contain_group('docker').with_ensure('present') }
         it { is_expected.to contain_class('docker').with_log_driver('journald') }
         it { is_expected.to contain_class('docker::compose').with_ensure('present') }
-        it { is_expected.to contain_file('/opt/puppetlabs/hdp').with_ensure('directory') }
+        it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement').with_ensure('directory') }
         it {
-          is_expected.to contain_docker_compose('hdp-proxy')
-            .with_compose_files(['/opt/puppetlabs/hdp/proxy/docker-compose.yaml'])
-            .that_requires('File[/opt/puppetlabs/hdp/proxy/docker-compose.yaml]')
-            .that_subscribes_to('File[/opt/puppetlabs/hdp/proxy/docker-compose.yaml]')
+          is_expected.to contain_docker_compose('data_entitlement-proxy')
+            .with_compose_files(['/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml'])
+            .that_requires('File[/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml]')
+            .that_subscribes_to('File[/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml]')
         }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
-            .with_content(%r{NAME=hdp\.test\.com})
+            .with_content(%r{NAME=data_entitlement\.test\.com})
             .with_content(%r{- "9091:9091"})
-            .with_content(%r{- "HDP_BACKENDS_HDP_ADDRESS=https://hdp\.com"})
+            .with_content(%r{- "HDP_BACKENDS_HDP_ADDRESS=https://data_entitlement\.com"})
         }
         dir_list = [
-          '/opt/puppetlabs/hdp',
-          '/opt/puppetlabs/hdp/ssl',
+          '/opt/puppetlabs/data_entitlement',
+          '/opt/puppetlabs/data_entitlement/ssl',
         ]
 
         dir_list.each do |d|
@@ -50,38 +50,38 @@ describe 'hdp::proxy' do
       context 'with specific version' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'image_repository' => 'hub.docker.com',
             'image_prefix' => '',
             'version' => 'foo',
             'token' => sensitive('test-token'),
-            'hdp_address' => 'https://hdp.com',
+            'data_entitlement_address' => 'https://data_entitlement.com',
           }
         end
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
             .with_owner('root')
             .with_group('docker')
             .with_content(%r{hub.docker.com/data-ingestion:foo})
         }
       end
 
-      context 'hdp admin config options' do
+      context 'data_entitlement admin config options' do
         context 'set prometheus namespace' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'token' => sensitive('test-token'),
-              'hdp_address' => 'https://hdp.com',
+              'data_entitlement_address' => 'https://data_entitlement.com',
               'prometheus_namespace' => 'foo',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .with_content(%r{- "HDP_ADMIN_PROMETHEUS_NAMESPACE=foo"})
           }
         end
@@ -91,9 +91,9 @@ describe 'hdp::proxy' do
         context 'set extra hosts' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'token' => sensitive('test-token'),
-              'hdp_address' => 'https://hdp.com',
+              'data_entitlement_address' => 'https://data_entitlement.com',
               'prometheus_namespace' => 'foo',
               'extra_hosts' => { 'foo' => '127.0.0.1', 'bar' => '1.1.1.1' },
             }
@@ -101,15 +101,15 @@ describe 'hdp::proxy' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .with_content(%r{extra_hosts:})
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .with_content(%r{foo:127\.0\.0\.1})
           }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .with_content(%r{bar:1\.1\.1\.1})
           }
         end
@@ -117,9 +117,9 @@ describe 'hdp::proxy' do
         context 'no extra hosts' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'token' => sensitive('test-token'),
-              'hdp_address' => 'https://hdp.com',
+              'data_entitlement_address' => 'https://data_entitlement.com',
               'prometheus_namespace' => 'foo',
               'extra_hosts' => {},
             }
@@ -127,7 +127,7 @@ describe 'hdp::proxy' do
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .without_content(%r{extra_hosts:})
           }
         end
@@ -136,17 +136,17 @@ describe 'hdp::proxy' do
       context 'token, org, and region' do
         let(:params) do
           {
-            'dns_name' => 'hdp.test.com',
+            'dns_name' => 'data_entitlement.test.com',
             'organization' => 'puppet',
             'region' => 'PDX',
             'token' => sensitive('$1$tokencity'),
-            'hdp_address' => 'https://hdp.com',
+            'data_entitlement_address' => 'https://data_entitlement.com',
           }
         end
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
             .with_content(%r{- "HDP_BACKENDS_HDP_ORGANIZATION=puppet"})
             .with_content(%r{- "HDP_BACKENDS_HDP_REGION=PDX"})
             .with_content(%r{- "HDP_BACKENDS_HDP_TOKEN=\$\$1\$\$tokencity"})
@@ -156,9 +156,9 @@ describe 'hdp::proxy' do
         context 'Nothing specified' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'token' => sensitive('$1$tokencity'),
-              'hdp_address' => 'https://hdp.com',
+              'data_entitlement_address' => 'https://data_entitlement.com',
               'allow_trust_on_first_use' => false,
               ## if ^ is false, we should fail compilation if certs keys and whatnot are not set.
             }
@@ -169,22 +169,22 @@ describe 'hdp::proxy' do
         context 'All specified' do
           let(:params) do
             {
-              'dns_name' => 'hdp.test.com',
+              'dns_name' => 'data_entitlement.test.com',
               'token' => sensitive('$1$tokencity'),
-              'hdp_address' => 'https://hdp.com',
+              'data_entitlement_address' => 'https://data_entitlement.com',
               'allow_trust_on_first_use' => false,
               'ca_cert_file' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
-              'cert_file' => '/etc/puppetlabs/puppet/ssl/certs/hdp.test.com.pem',
-              'key_file' => '/etc/puppetlabs/puppet/ssl/private_keys/hdp.test.com.pem',
+              'cert_file' => '/etc/puppetlabs/puppet/ssl/certs/data_entitlement.test.com.pem',
+              'key_file' => '/etc/puppetlabs/puppet/ssl/private_keys/data_entitlement.test.com.pem',
             }
           end
 
           it { is_expected.to compile.with_all_deps }
           it {
-            is_expected.to contain_file('/opt/puppetlabs/hdp/proxy/docker-compose.yaml')
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
               .with_content(%r{- "HDP_HTTP_UPLOAD_CACERTFILE=/etc/puppetlabs/puppet/ssl/certs/ca\.pem"})
-              .with_content(%r{- "HDP_HTTP_UPLOAD_CERTFILE=/etc/puppetlabs/puppet/ssl/certs/hdp\.test\.com\.pem"})
-              .with_content(%r{- "HDP_HTTP_UPLOAD_KEYFILE=/etc/puppetlabs/puppet/ssl/private_keys/hdp\.test\.com\.pem"})
+              .with_content(%r{- "HDP_HTTP_UPLOAD_CERTFILE=/etc/puppetlabs/puppet/ssl/certs/data_entitlement\.test\.com\.pem"})
+              .with_content(%r{- "HDP_HTTP_UPLOAD_KEYFILE=/etc/puppetlabs/puppet/ssl/private_keys/data_entitlement\.test\.com\.pem"})
           }
         end
       end

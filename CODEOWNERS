@@ -7,5 +7,5 @@
 # internal instance of HDP.
 #
 # Additionally, the HDP team will also get pinged.
-* @puppetlabs/dio @puppetlabs/hdp
+* @puppetlabs/dio @puppetlabs/data_entitlement
 

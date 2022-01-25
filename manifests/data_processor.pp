@@ -2,7 +2,7 @@
 #
 # @summary Simple class to enable the HDP data processor
 #
-# @param [HDP::Url] hdp_url
+# @param [HDP::Url] data_entitlement_url
 #   The url to send data to.
 #
 # @param [Boolean] enable_reports
@@ -39,24 +39,24 @@
 # @param [Optional[Array[Stdlib::HTTPSUrl]]] pdb_submit_only_server_urls
 #   An array of PuppetDB instance URLs, including port number, to which
 #   commands should be sent, but which shouldn’t ever be queried for data
-#   needed during a Puppet run. This setting will use the value of `$hdp_url`
+#   needed during a Puppet run. This setting will use the value of `$data_entitlement_url`
 #   unless another value is provided.
 #
 # @example Configuration in a manifest with default port
 #   # Settings applied to both a primary and compilers
 #   class { 'profile::primary_and_compilers':
-#     class { 'hdp::data_processor':
-#       hdp_url => 'https://hdp.example.com:9091',
+#     class { 'data_entitlement::data_processor':
+#       data_entitlement_url => 'https://data_entitlement.example.com:9091',
 #     }
 #   }
 #
 # @example Configuration in a manifest with two HDP instances
 #   # Settings applied to both a primary and compilers
 #   class { 'profile::primary_and_compilers':
-#     class { 'hdp::data_processor':
-#       hdp_url =>
-#         'https://hdp-prod.example.com:9091',
-#         'https://hdp-staging.example.com:9091',
+#     class { 'data_entitlement::data_processor':
+#       data_entitlement_url =>
+#         'https://data_entitlement-prod.example.com:9091',
+#         'https://data_entitlement-staging.example.com:9091',
 #       ],
 #     }
 #   }
@@ -64,8 +64,8 @@
 # @example Configuration in a manifest using PupeptDB instead of a facts terminus
 #   # Settings applied to both a primary and compilers
 #   class { 'profile::primary_and_compilers':
-#     class { 'hdp::data_processor':
-#       hdp_url           => 'https://hdp.example.com:9091',
+#     class { 'data_entitlement::data_processor':
+#       data_entitlement_url           => 'https://data_entitlement.example.com:9091',
 #       collection_method => 'pdb_submit_only_server_urls',
 #     }
 #   }
@@ -73,8 +73,8 @@
 # @example Configuration in a manifest using PupeptDB and an additional submit_only_server
 #   # Settings applied to both a primary and compilers
 #   class { 'profile::primary_and_compilers':
-#     class { 'hdp::data_processor':
-#       hdp_url                     => 'https://hdp.example.com:9091',
+#     class { 'data_entitlement::data_processor':
+#       data_entitlement_url                     => 'https://data_entitlement.example.com:9091',
 #       collection_method           => 'pdb_submit_only_server_urls',
 #       pdb_submit_only_server_urls => [
 #         'https://additional-destination.example.com',
@@ -84,33 +84,33 @@
 #
 # @example Configuration via Hiera with default port
 #   ---
-#   hdp::data_processor::hdp_url: 'https://hdp.example.com:9091'
+#   data_entitlement::data_processor::data_entitlement_url: 'https://data_entitlement.example.com:9091'
 #
 # @example Configuration via Hiera sending data to two HDP servers
 #   ---
-#   hdp::data_processor::hdp_url:
-#     - 'https://hdp-prod.example.com:9091'
-#     - 'https://hdp-staging.example.com:9091'
+#   data_entitlement::data_processor::data_entitlement_url:
+#     - 'https://data_entitlement-prod.example.com:9091'
+#     - 'https://data_entitlement-staging.example.com:9091'
 #
-class hdp::data_processor (
-  HDP::Url $hdp_url,
+class data_entitlement::data_processor (
+  HDP::Url $data_entitlement_url,
   Boolean $enable_reports = true,
   Boolean $manage_routes = true,
   Boolean $manage_pdb_submit_only_server_urls = true,
   Boolean $collect_resources = true,
   Enum['facts_terminus', 'pdb_submit_only_server_urls'] $collection_method = 'facts_terminus',
-  String[1] $facts_terminus = 'hdp',
-  String[1] $facts_cache_terminus = 'hdp',
-  String[1] $reports = 'puppetdb,hdp',
+  String[1] $facts_terminus = 'data_entitlement',
+  String[1] $facts_cache_terminus = 'data_entitlement',
+  String[1] $reports = 'puppetdb,data_entitlement',
   String[1] $keep_node_re = '.*',
   Optional[Array[Stdlib::HTTPSUrl]] $pdb_submit_only_server_urls = undef,
 ) {
   if $collect_resources {
-    include hdp::resource_collector
+    include data_entitlement::resource_collector
   }
 
   if $collection_method == 'facts_terminus' {
-    file { '/etc/puppetlabs/hdp':
+    file { '/etc/puppetlabs/data_entitlement':
       ensure => directory,
       mode   => '0755',
       owner  => 'pe-puppet',
@@ -118,37 +118,37 @@ class hdp::data_processor (
     }
 
     if $manage_routes {
-      file { '/etc/puppetlabs/hdp/hdp_routes.yaml':
+      file { '/etc/puppetlabs/data_entitlement/data_entitlement_routes.yaml':
         ensure  => file,
         owner   => pe-puppet,
         group   => pe-puppet,
         mode    => '0640',
-        content => epp('hdp/hdp_routes.yaml.epp', {
+        content => epp('data_entitlement/data_entitlement_routes.yaml.epp', {
             'facts_terminus'       => $facts_terminus,
             'facts_cache_terminus' => $facts_cache_terminus,
         }),
         notify  => Service['pe-puppetserver'],
       }
 
-      ini_setting { 'enable hdp_routes.yaml':
+      ini_setting { 'enable data_entitlement_routes.yaml':
         ensure  => present,
         path    => '/etc/puppetlabs/puppet/puppet.conf',
         section => 'master',
         setting => 'route_file',
-        value   => '/etc/puppetlabs/hdp/hdp_routes.yaml',
-        require => File['/etc/puppetlabs/hdp/hdp_routes.yaml'],
+        value   => '/etc/puppetlabs/data_entitlement/data_entitlement_routes.yaml',
+        require => File['/etc/puppetlabs/data_entitlement/data_entitlement_routes.yaml'],
         notify  => Service['pe-puppetserver'],
       }
     }
 
-    file { '/etc/puppetlabs/puppet/hdp.yaml':
+    file { '/etc/puppetlabs/puppet/data_entitlement.yaml':
       ensure  => file,
       owner   => pe-puppet,
       group   => pe-puppet,
       mode    => '0640',
-      content => epp('hdp/hdp.yaml.epp', {
-          'hdp_urls'   => Array($hdp_url, true),
-          'keep_nodes' => $keep_node_re,
+      content => epp('data_entitlement/data_entitlement.yaml.epp', {
+          'data_entitlement_urls' => Array($data_entitlement_url, true),
+          'keep_nodes'            => $keep_node_re,
       }),
       notify  => Service['pe-puppetserver'],
     }
@@ -167,9 +167,9 @@ class hdp::data_processor (
     if $manage_pdb_submit_only_server_urls {
       if $pdb_submit_only_server_urls {
         validate_array($pdb_submit_only_server_urls)
-        $_real_pdb_submit_only_server_urls = unique($pdb_submit_only_server_urls + Array($hdp_url, true))
+        $_real_pdb_submit_only_server_urls = unique($pdb_submit_only_server_urls + Array($data_entitlement_url, true))
       } else {
-        $_real_pdb_submit_only_server_urls = Array($hdp_url, true)
+        $_real_pdb_submit_only_server_urls = Array($data_entitlement_url, true)
       }
 
       ini_setting { 'puppetdb_submit_only_server_urls':
@@ -183,13 +183,13 @@ class hdp::data_processor (
     }
 
     # remove terminus settings
-    file { '/etc/puppetlabs/puppet/hdp.yaml':
+    file { '/etc/puppetlabs/puppet/data_entitlement.yaml':
       ensure => absent,
       notify => Service['pe-puppetserver'],
     }
 
     if $manage_routes {
-      file { '/etc/puppetlabs/hdp/hdp_routes.yaml':
+      file { '/etc/puppetlabs/data_entitlement/data_entitlement_routes.yaml':
         ensure => absent,
         notify => Service['pe-puppetserver'],
       }

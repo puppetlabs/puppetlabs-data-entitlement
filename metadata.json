@@ -1,12 +1,12 @@
 {
-  "name": "puppetlabs-hdp",
+  "name": "puppetlabs-data_entitlement",
   "version": "0.0.1",
   "author": "jpc",
-  "summary": "Configures Historical Data Platform",
+  "summary": "Configures Data Entitlement",
   "license": "Apache-2.0",
-  "source": "https://github.com/puppetlabs/puppetlabs-hdp.git",
-  "project_page": "https://github.com/puppetlabs/puppetlabs-hdp",
-  "issues_url": "https://github.com/puppetlabs/puppetlabs-hdp/issues",
+  "source": "https://github.com/puppetlabs/puppetlabs-data-entitlement.git",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-data-entitlement",
+  "issues_url": "https://github.com/puppetlabs/puppetlabs-data-entitlement/issues",
   "dependencies": [
     {
       "name": "puppetlabs/docker",

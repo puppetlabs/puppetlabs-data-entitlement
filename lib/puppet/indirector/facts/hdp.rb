@@ -1,7 +1,7 @@
 require 'puppet/node/facts'
 require 'puppet/indirector/facts/puppetdb'
 require 'puppet/indirector/facts/yaml'
-require 'puppet/util/hdp'
+require 'puppet/util/data_entitlement'
 require 'json'
 require 'time'
 
@@ -19,8 +19,8 @@ class Puppet::Node::Facts::Hdp < Puppet::Node::Facts::Puppetdb
       keep_nodes_re = Regexp.new(settings['keep_nodes'])
 
       if keep_nodes_re.match(request.instance.name)
-        hdp_urls = settings['hdp_urls']
-        hdp_urls.each do |host|
+        data_entitlement_urls = settings['data_entitlement_urls']
+        data_entitlement_urls.each do |host|
           submit_facts(host, request, current_time.utc)
         end
       end
@@ -28,10 +28,10 @@ class Puppet::Node::Facts::Hdp < Puppet::Node::Facts::Puppetdb
       Puppet.err "Could not send facts to HDP: #{e}
 #{e.backtrace}"
     end
-    ## Data has been sent to HDP - now delete our hdp facts and forward to puppetdb
+    ## Data has been sent to HDP - now delete our data_entitlement facts and forward to puppetdb
     r = request.instance.dup
     r.values = r.values.dup
-    r.values.delete('hdp')
+    r.values.delete('data_entitlement')
     request.instance = r
     super(request)
   end

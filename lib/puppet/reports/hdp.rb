@@ -3,11 +3,11 @@ require 'puppet'
 require 'puppet/reports/puppetdb'
 require 'puppet/util/puppetdb'
 require 'puppet/util/puppetdb/command_names'
-require 'puppet/util/hdp'
+require 'puppet/util/data_entitlement'
 
-Puppet::Reports.register_report(:hdp) do
+Puppet::Reports.register_report(:data_entitlement) do
   desc <<-DESC
-    A copy of the standard http report processor, but sends to hdp.
+    A copy of the standard http report processor, but sends to data_entitlement.
   DESC
 
   include Puppet::Util::Hdp
@@ -16,17 +16,17 @@ Puppet::Reports.register_report(:hdp) do
 
   def settings
     return @settings if @settings
-    @settings_file = Puppet[:confdir] + '/hdp.yaml'
+    @settings_file = Puppet[:confdir] + '/data_entitlement.yaml'
     @settings = YAML.load_file(@settings_file)
   end
 
   def process
     current_time = Time.now
-    hdp_urls = settings['hdp_urls']
-    hdp_urls.each do |host|
+    data_entitlement_urls = settings['data_entitlement_urls']
+    data_entitlement_urls.each do |host|
       Puppet.info "HDP sending report to #{host}"
       report_hash = report_to_hash(current_time)
-      submit_command_to_hdp(host, CommandStoreReport, 8, self.host, current_time.clone.utc, report_hash)
+      submit_command_to_data_entitlement(host, CommandStoreReport, 8, self.host, current_time.clone.utc, report_hash)
     end
   end
 
@@ -37,7 +37,7 @@ Puppet::Reports.register_report(:hdp) do
   # @api private
   def report_to_hash(producer_timestamp)
     profile('Convert report to wire format hash',
-            [:hdp, :report, :convert_to_wire_format_hash]) do
+            [:data_entitlement, :report, :convert_to_wire_format_hash]) do
       if environment.nil?
         raise Puppet::Error, 'Environment is nil, unable to submit report. This may be due a bug with Puppet. Ensure you are running the latest revision, see PUP-2508 for more details.'
       end
@@ -181,7 +181,7 @@ Puppet::Reports.register_report(:hdp) do
 
   def build_events_list(events)
     profile("Build events list (count: #{events.count})",
-            [:hdp, :events_list, :build]) do
+            [:data_entitlement, :events_list, :build]) do
       events.map { |event| event_to_hash(event) }
     end
   end

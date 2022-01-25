@@ -1,0 +1,10 @@
+<%- | Array[Stdlib::HTTPUrl] $data_entitlement_urls,
+      String[1] $keep_nodes,
+| -%>
+# managed by puppet data_entitlement module
+---
+'data_entitlement_urls':
+<%  $data_entitlement_urls.each |$url| { -%>
+  - '<%= $url %>'
+<% } -%>
+'keep_nodes': '<%= $keep_nodes %>'

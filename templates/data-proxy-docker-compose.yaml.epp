@@ -1,7 +1,7 @@
-<%- | String $hdp_version,
+<%- | String $data_entitlement_version,
       String $image_prefix,
       Optional[String] $image_repository,
-      Integer $hdp_port,
+      Integer $data_entitlement_port,
 
       Optional[String] $ca_server,
       Optional[String] $ca_cert_file,
@@ -16,12 +16,12 @@
 
       String $dns_name,
       Array[String] $dns_alt_names,
-      String $hdp_user,
+      String $data_entitlement_user,
       String $root_dir,
       String $prometheus_namespace,
       Hash[String, String] $extra_hosts,
 
-      String $hdp_address,
+      String $data_entitlement_address,
       Sensitive[String] $token,
       Optional[String] $organization,
       Optional[String] $region,
@@ -29,11 +29,11 @@
 version: "3"
 services:
   data:
-    image: "<% if $image_repository { %><%= $image_repository %>/<% } %><%= $image_prefix %>data-ingestion:<%= $hdp_version %>"
-    user: "<%= $hdp_user %>:<%= $hdp_user %>"
+    image: "<% if $image_repository { %><%= $image_repository %>/<% } %><%= $image_prefix %>data-ingestion:<%= $data_entitlement_version %>"
+    user: "<%= $data_entitlement_user %>:<%= $data_entitlement_user %>"
     restart: "always"
     ports:
-      - "<%= $hdp_port %>:9091"
+      - "<%= $data_entitlement_port %>:9091"
     environment:
       - "GIN_MODE=release"
       - "HDP_SSL_DIR=/etc/puppetlabs/puppet/ssl"
@@ -59,7 +59,7 @@ services:
       - "HDP_BACKENDS_REDIS_ENABLED=false"
       - "HDP_HTTP_QUERY_ENABLED=false"
       - "HDP_BACKENDS_HDP_ENABLED=true"
-      - "HDP_BACKENDS_HDP_ADDRESS=<%= $hdp_address %>"
+      - "HDP_BACKENDS_HDP_ADDRESS=<%= $data_entitlement_address %>"
 <%- if $organization { %>
       - "HDP_BACKENDS_HDP_ORGANIZATION=<%= $organization %>"
 <%- } %>

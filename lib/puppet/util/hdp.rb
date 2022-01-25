@@ -18,7 +18,7 @@ module Puppet::Util::Hdp
 
   def settings
     return @settings if @settings
-    @settings_file = Puppet[:confdir] + '/hdp.yaml'
+    @settings_file = Puppet[:confdir] + '/data_entitlement.yaml'
     @settings = YAML.load_file(@settings_file)
   end
 
@@ -29,7 +29,7 @@ module Puppet::Util::Hdp
     trusted.to_h
   end
 
-  def submit_command_to_hdp(host, command, version, certname, producer_timestamp_utc, payload)
+  def submit_command_to_data_entitlement(host, command, version, certname, producer_timestamp_utc, payload)
     checksum_payload = Puppet::Util::Puppetdb::CharEncoding.utf8_string({
       command: command,
       version: version,
@@ -62,7 +62,7 @@ module Puppet::Util::Hdp
     current_time = Time.now
 
     payload = profile('Encode facts command submission payload',
-                      [:hdp, :facts, :encode]) do
+                      [:data_entitlement, :facts, :encode]) do
       facts = request.instance.dup
       facts.values = facts.values.dup
       facts.values[:trusted] = get_trusted_info(request.node)
@@ -86,6 +86,6 @@ module Puppet::Util::Hdp
       payload_value
     end
 
-    submit_command_to_hdp(host, CommandReplaceFacts, 5, request.key, current_time.clone.utc, payload)
+    submit_command_to_data_entitlement(host, CommandReplaceFacts, 5, request.key, current_time.clone.utc, payload)
   end
 end

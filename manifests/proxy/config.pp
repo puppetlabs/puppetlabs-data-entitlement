@@ -1,17 +1,17 @@
 # @api private
-class hdp::proxy::config () {
-  $_mount_host_certs = $trusted['certname'] == $hdp::proxy::dns_name
+class data_entitlement::proxy::config () {
+  $_mount_host_certs = $trusted['certname'] == $data_entitlement::proxy::dns_name
   if $_mount_host_certs {
-    $_final_hdp_user = pick("${facts.dig('hdp_health', 'puppet_user')}", '0')
+    $_final_data_entitlement_user = pick("${facts.dig('data_entitlement_health', 'puppet_user')}", '0')
     $_final_cert_file = "/etc/puppetlabs/puppet/ssl/certs/${trusted['certname']}.pem"
     $_final_key_file = "/etc/puppetlabs/puppet/ssl/private_keys/${trusted['certname']}.pem"
   } else {
-    $_final_hdp_user = $hdp::proxy::hdp_user
-    $_final_cert_file =  $hdp::proxy::cert_file
-    $_final_key_file =  $hdp::proxy::key_file
+    $_final_data_entitlement_user = $data_entitlement::proxy::data_entitlement_user
+    $_final_cert_file =  $data_entitlement::proxy::cert_file
+    $_final_key_file =  $data_entitlement::proxy::key_file
   }
 
-  if !$hdp::proxy::allow_trust_on_first_use {
+  if !$data_entitlement::proxy::allow_trust_on_first_use {
     ## All cert_file, key_file, and ca_cert_file must be set if 
     ## allow_trust_on_first_use is true.
     if !$_final_key_file {
@@ -20,7 +20,7 @@ class hdp::proxy::config () {
     if !$_final_cert_file {
       fail('Cert file must be provided, or an untrusted download will occur')
     }
-    if !$hdp::proxy::ca_cert_file {
+    if !$data_entitlement::proxy::ca_cert_file {
       fail('CA Cert file must be provided, or an untrusted download will occur')
     }
   }
@@ -28,51 +28,51 @@ class hdp::proxy::config () {
   file {
     default:
       ensure  => directory,
-      owner   => $_final_hdp_user,
-      group   => $_final_hdp_user,
+      owner   => $_final_data_entitlement_user,
+      group   => $_final_data_entitlement_user,
       require => Group['docker'],
       ;
-    '/opt/puppetlabs/hdp':
+    '/opt/puppetlabs/data_entitlement':
       mode  => '0775',
       ;
-    '/opt/puppetlabs/hdp/proxy':
+    '/opt/puppetlabs/data_entitlement/proxy':
       mode  => '0775',
       ;
-    '/opt/puppetlabs/hdp/ssl':
+    '/opt/puppetlabs/data_entitlement/ssl':
       mode  => '0700',
       ;
-    '/opt/puppetlabs/hdp/proxy/docker-compose.yaml':
+    '/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml':
       ensure  => file,
       mode    => '0440',
       owner   => 'root',
       group   => 'docker',
-      content => epp('hdp/hdp-proxy-docker-compose.yaml.epp', {
-          'hdp_version'          => $hdp::proxy::version,
-          'image_prefix'         => $hdp::proxy::image_prefix,
-          'image_repository'     => $hdp::proxy::image_repository,
-          'hdp_port'             => $hdp::proxy::hdp_port,
+      content => epp('data_entitlement/data-proxy-docker-compose.yaml.epp', {
+          'data_entitlement_version' => $data_entitlement::proxy::version,
+          'image_prefix'             => $data_entitlement::proxy::image_prefix,
+          'image_repository'         => $data_entitlement::proxy::image_repository,
+          'data_entitlement_port'    => $data_entitlement::proxy::data_entitlement_port,
 
-          'ca_server'            => $hdp::proxy::ca_server,
-          'key_file'             => $hdp::proxy::key_file,
-          'cert_file'            => $hdp::proxy::cert_file,
-          'ca_cert_file'         => $hdp::proxy::ca_cert_file,
-          'client_key_file'      => $hdp::proxy::client_key_file,
-          'client_cert_file'     => $hdp::proxy::client_cert_file,
-          'client_ca_cert_file'  => $hdp::proxy::client_ca_cert_file,
+          'ca_server'                => $data_entitlement::proxy::ca_server,
+          'key_file'                 => $data_entitlement::proxy::key_file,
+          'cert_file'                => $data_entitlement::proxy::cert_file,
+          'ca_cert_file'             => $data_entitlement::proxy::ca_cert_file,
+          'client_key_file'          => $data_entitlement::proxy::client_key_file,
+          'client_cert_file'         => $data_entitlement::proxy::client_cert_file,
+          'client_ca_cert_file'      => $data_entitlement::proxy::client_ca_cert_file,
 
-          'dns_name'             => $hdp::proxy::dns_name,
-          'dns_alt_names'        => $hdp::proxy::dns_alt_names,
-          'hdp_user'             => $_final_hdp_user,
-          'root_dir'             => '/opt/puppetlabs/hdp',
-          'prometheus_namespace' => $hdp::proxy::prometheus_namespace,
-          'extra_hosts'          => $hdp::proxy::extra_hosts,
+          'dns_name'                 => $data_entitlement::proxy::dns_name,
+          'dns_alt_names'            => $data_entitlement::proxy::dns_alt_names,
+          'data_entitlement_user'    => $_final_data_entitlement_user,
+          'root_dir'                 => '/opt/puppetlabs/data_entitlement',
+          'prometheus_namespace'     => $data_entitlement::proxy::prometheus_namespace,
+          'extra_hosts'              => $data_entitlement::proxy::extra_hosts,
 
-          'hdp_address'          => $hdp::proxy::hdp_address,
-          'token'                => $hdp::proxy::token,
-          'organization'         => $hdp::proxy::organization,
-          'region'               => $hdp::proxy::region,
+          'data_entitlement_address' => $data_entitlement::proxy::data_entitlement_address,
+          'token'                    => $data_entitlement::proxy::token,
+          'organization'             => $data_entitlement::proxy::organization,
+          'region'                   => $data_entitlement::proxy::region,
 
-          'mount_host_certs'     => $_mount_host_certs,
+          'mount_host_certs'         => $_mount_host_certs,
         }
       ),
       ;

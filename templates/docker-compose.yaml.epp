@@ -1,41 +1,41 @@
-<%- | String $hdp_version,
+<%- | String $data_entitlement_version,
       String $ui_version,
       String $frontend_version,
       String $image_prefix,
       Optional[String] $image_repository,
-      Integer $hdp_port,
-      Integer $hdp_query_port,
+      Integer $data_entitlement_port,
+      Integer $data_entitlement_query_port,
 
-      Enum['basic_auth', 'oidc', 'pe_rbac', 'none'] $hdp_query_auth,
-      Optional[String] $hdp_query_username,
-      Optional[Sensitive[String]] $hdp_query_password,
-      Optional[String] $hdp_query_oidc_issuer,
-      Optional[String] $hdp_query_oidc_client_id,
-      Optional[String] $hdp_query_oidc_audience,
-      Optional[Stdlib::HTTPUrl] $hdp_query_pe_rbac_service,
-      Integer $hdp_query_pe_rbac_role_id,
-      String $hdp_query_pe_rbac_ca_cert_file,
+      Enum['basic_auth', 'oidc', 'pe_rbac', 'none'] $data_entitlement_query_auth,
+      Optional[String] $data_entitlement_query_username,
+      Optional[Sensitive[String]] $data_entitlement_query_password,
+      Optional[String] $data_entitlement_query_oidc_issuer,
+      Optional[String] $data_entitlement_query_oidc_client_id,
+      Optional[String] $data_entitlement_query_oidc_audience,
+      Optional[Stdlib::HTTPUrl] $data_entitlement_query_pe_rbac_service,
+      Integer $data_entitlement_query_pe_rbac_role_id,
+      String $data_entitlement_query_pe_rbac_ca_cert_file,
 
-      Integer $hdp_ui_http_port,
-      Integer $hdp_ui_https_port,
+      Integer $data_entitlement_ui_http_port,
+      Integer $data_entitlement_ui_https_port,
 
       String $elasticsearch_image,
       String $redis_image,
       String $minio_image,
 
-      Boolean $hdp_manage_s3,
-      String $hdp_s3_endpoint,
-      String $hdp_s3_region,
-      String $hdp_s3_access_key,
-      Sensitive[String] $hdp_s3_secret_key,
-      String $hdp_s3_facts_bucket,
-      Boolean $hdp_s3_force_path_style,
-      Boolean $hdp_s3_disable_ssl,
+      Boolean $data_entitlement_manage_s3,
+      String $data_entitlement_s3_endpoint,
+      String $data_entitlement_s3_region,
+      String $data_entitlement_s3_access_key,
+      Sensitive[String] $data_entitlement_s3_secret_key,
+      String $data_entitlement_s3_facts_bucket,
+      Boolean $data_entitlement_s3_force_path_style,
+      Boolean $data_entitlement_s3_disable_ssl,
 
-      Boolean $hdp_manage_es,
-      String $hdp_es_host,
-      Optional[String] $hdp_es_username,
-      Optional[Sensitive[String]] $hdp_es_password,
+      Boolean $data_entitlement_manage_es,
+      String $data_entitlement_es_host,
+      Optional[String] $data_entitlement_es_username,
+      Optional[Sensitive[String]] $data_entitlement_es_password,
 
       Optional[String] $ca_server,
       Optional[String] $ca_cert_file,
@@ -51,7 +51,7 @@
 
       String $dns_name,
       Array[String] $dns_alt_names,
-      String $hdp_user,
+      String $data_entitlement_user,
       String $root_dir,
       String $max_es_memory,
       String $prometheus_namespace,
@@ -62,30 +62,30 @@
 version: "3"
 services:
   data:
-    image: "<% if $image_repository { %><%= $image_repository %>/<% } %><%= $image_prefix %>data-ingestion:<%= $hdp_version %>"
-    user: "<%= $hdp_user %>:<%= $hdp_user %>"
+    image: "<% if $image_repository { %><%= $image_repository %>/<% } %><%= $image_prefix %>data-ingestion:<%= $data_entitlement_version %>"
+    user: "<%= $data_entitlement_user %>:<%= $data_entitlement_user %>"
     restart: "always"
     ports:
-      - "<%= $hdp_port %>:9091"
+      - "<%= $data_entitlement_port %>:9091"
     environment:
       - "GIN_MODE=release"
       - "HDP_BUCKET_PREFIX="
-      - "HDP_BACKENDS_S3_ENDPOINT=<%= $hdp_s3_endpoint %>"
-      - "HDP_BACKENDS_S3_REGION=<%= $hdp_s3_region %>"
-      - "HDP_BACKENDS_S3_ACCESS_KEY_ID=<%= $hdp_s3_access_key %>"
-      - "HDP_BACKENDS_S3_SECRET_ACCESS_KEY=<%= unwrap($hdp_s3_secret_key) %>"
-      - "HDP_BACKENDS_S3_FACTSBUCKET=<%= $hdp_s3_facts_bucket %>"
-      - "HDP_BACKENDS_S3_DISABLESSL=<%= $hdp_s3_disable_ssl %>"
-      - "HDP_BACKENDS_S3_S3FORCEPATHSTYLE=<%= $hdp_s3_force_path_style %>"
+      - "HDP_BACKENDS_S3_ENDPOINT=<%= $data_entitlement_s3_endpoint %>"
+      - "HDP_BACKENDS_S3_REGION=<%= $data_entitlement_s3_region %>"
+      - "HDP_BACKENDS_S3_ACCESS_KEY_ID=<%= $data_entitlement_s3_access_key %>"
+      - "HDP_BACKENDS_S3_SECRET_ACCESS_KEY=<%= unwrap($data_entitlement_s3_secret_key) %>"
+      - "HDP_BACKENDS_S3_FACTSBUCKET=<%= $data_entitlement_s3_facts_bucket %>"
+      - "HDP_BACKENDS_S3_DISABLESSL=<%= $data_entitlement_s3_disable_ssl %>"
+      - "HDP_BACKENDS_S3_S3FORCEPATHSTYLE=<%= $data_entitlement_s3_force_path_style %>"
       - "HDP_BACKENDS_S3_ENABLED=true"
       - "HDP_KV_ENABLED=true"
       - "HDP_KV_HOST=redis:6379"
-      - "HDP_BACKENDS_ES_HOST=<%= $hdp_es_host %>"
-      <%- if $hdp_es_username { %>
-      - "HDP_BACKENDS_ES_USERNAME=<%= $hdp_es_username %>"
+      - "HDP_BACKENDS_ES_HOST=<%= $data_entitlement_es_host %>"
+      <%- if $data_entitlement_es_username { %>
+      - "HDP_BACKENDS_ES_USERNAME=<%= $data_entitlement_es_username %>"
       <%- } %>
-      <%- if $hdp_es_password { %>
-      - "HDP_BACKENDS_ES_PASSWORD=<%= unwrap($hdp_es_password) %>"
+      <%- if $data_entitlement_es_password { %>
+      - "HDP_BACKENDS_ES_PASSWORD=<%= unwrap($data_entitlement_es_password) %>"
       <%- } %>
       - "HDP_BACKENDS_ES_ENABLED=true"
       - "HDP_BACKENDS_ES_PACKAGES=true"
@@ -106,23 +106,23 @@ services:
       <%- } %>
       - "HDP_DNSNAMES=<%= join($dns_alt_names, ',') %>"
       - "HDP_NAME=<%= $dns_name %>"
-    <%- if $hdp_query_auth == 'basic_auth' or $hdp_query_username { %> ## query_auth is a new parameter, default behavior was basic_auth when username was set.
-      <%- if $hdp_query_username { %>
-      - "HDP_HTTP_QUERY_USER=<%= $hdp_query_username %>"
+    <%- if $data_entitlement_query_auth == 'basic_auth' or $data_entitlement_query_username { %> ## query_auth is a new parameter, default behavior was basic_auth when username was set.
+      <%- if $data_entitlement_query_username { %>
+      - "HDP_HTTP_QUERY_USER=<%= $data_entitlement_query_username %>"
       <%- } %>
-      <%- if $hdp_query_password { %>
-      - "HDP_HTTP_QUERY_PASSWORD=<%= regsubst(unwrap($hdp_query_password), '\$', '$$', 'G') %>"
+      <%- if $data_entitlement_query_password { %>
+      - "HDP_HTTP_QUERY_PASSWORD=<%= regsubst(unwrap($data_entitlement_query_password), '\$', '$$', 'G') %>"
       <%- } %>
     <%- } %>
-    <%- if $hdp_query_auth == 'oidc' { %>  
-      - "HDP_HTTP_QUERY_SSO_ISSUER=<%= $hdp_query_oidc_issuer %>"
-      - "HDP_HTTP_QUERY_SSO_CLIENTID=<%= $hdp_query_oidc_client_id %>"
-      - "HDP_HTTP_QUERY_SSO_AUDIENCE=<%= $hdp_query_oidc_audience %>"
+    <%- if $data_entitlement_query_auth == 'oidc' { %>  
+      - "HDP_HTTP_QUERY_SSO_ISSUER=<%= $data_entitlement_query_oidc_issuer %>"
+      - "HDP_HTTP_QUERY_SSO_CLIENTID=<%= $data_entitlement_query_oidc_client_id %>"
+      - "HDP_HTTP_QUERY_SSO_AUDIENCE=<%= $data_entitlement_query_oidc_audience %>"
     <%- } %>
-    <%- if $hdp_query_auth == 'pe_rbac' { %>  
-      - "HDP_HTTP_QUERY_PE_RBAC_SERVICE_LOCATION=<%= $hdp_query_pe_rbac_service %>"
-      - "HDP_HTTP_QUERY_PE_RBAC_ROLE_ID=<%= $hdp_query_pe_rbac_role_id %>"
-      <%- if $hdp_query_pe_rbac_ca_cert_file != '-' { %>  ## Don't set, i.e. use system CA, when set to -
+    <%- if $data_entitlement_query_auth == 'pe_rbac' { %>  
+      - "HDP_HTTP_QUERY_PE_RBAC_SERVICE_LOCATION=<%= $data_entitlement_query_pe_rbac_service %>"
+      - "HDP_HTTP_QUERY_PE_RBAC_ROLE_ID=<%= $data_entitlement_query_pe_rbac_role_id %>"
+      <%- if $data_entitlement_query_pe_rbac_ca_cert_file != '-' { %>  ## Don't set, i.e. use system CA, when set to -
       - "HDP_HTTP_QUERY_PE_RBAC_CA_CERT_FILE=/etc/puppetlabs/puppet/ssl/certs/ca.pem" ## This is handled by the volume mounts - always place in this location
       <%- } %>
     <%- } %>
@@ -134,10 +134,10 @@ services:
       - "HDP_ADMIN_ACCESS_LOG_LEVEL=<%= $access_log_level %>"
     links:
       - redis
-      <%- if $hdp_manage_es { %>
+      <%- if $data_entitlement_manage_es { %>
       - elasticsearch
       <%- } %>
-      <%- if $hdp_manage_s3 { %>
+      <%- if $data_entitlement_manage_s3 { %>
       - minio
       <%- } %>
     volumes:
@@ -147,8 +147,8 @@ services:
       - "/etc/puppetlabs/puppet/ssl/private_keys/<%= $dns_name %>.pem:/etc/puppetlabs/puppet/ssl/data-ingestion.key.pem:ro"
       - "/etc/puppetlabs/puppet/ssl/certs/ca.pem:/etc/puppetlabs/puppet/ssl/ca.cert.pem:ro"
 <%- } %>
-<%- if $hdp_query_auth == 'pe_rbac' and $hdp_query_pe_rbac_ca_cert_file != '-' { %>  
-      - "<%= $hdp_query_pe_rbac_ca_cert_file %>:/etc/puppetlabs/puppet/ssl/certs/ca.pem:ro"
+<%- if $data_entitlement_query_auth == 'pe_rbac' and $data_entitlement_query_pe_rbac_ca_cert_file != '-' { %>  
+      - "<%= $data_entitlement_query_pe_rbac_ca_cert_file %>:/etc/puppetlabs/puppet/ssl/certs/ca.pem:ro"
 <%- } %>
 <%- if length($extra_hosts) > 0 { %>
     extra_hosts:
@@ -157,7 +157,7 @@ services:
   <%- } -%>
 <%- } %>
 
-<%- if $hdp_manage_es { %>
+<%- if $data_entitlement_manage_es { %>
   elasticsearch:
     image: "<%= $elasticsearch_image %>"
     hostname: "elasticsearch"
@@ -165,20 +165,20 @@ services:
     environment:
       - "node.name=elasticsearch-0"
       - "discovery.type=single-node"
-      - "cluster.name=hdp"
+      - "cluster.name=data_entitlement"
       ## TODO acwrenn - easier to preallocate, but maybe we want some slack here
       - "ES_JAVA_OPTS=-Xms<%= $max_es_memory %> -Xmx<%= $max_es_memory %>"
     volumes:
       - "elastic:/usr/share/elasticsearch/data"
 <%- } %>
-<%- if $hdp_manage_s3 { %>
+<%- if $data_entitlement_manage_s3 { %>
   minio:
     image: "<%= $minio_image %>"
     hostname: "minio"
     restart: "always"
     environment:
-      - "MINIO_ACCESS_KEY=<%= $hdp_s3_access_key %>"
-      - "MINIO_SECRET_KEY=<%= unwrap($hdp_s3_secret_key) %>"
+      - "MINIO_ACCESS_KEY=<%= $data_entitlement_s3_access_key %>"
+      - "MINIO_SECRET_KEY=<%= unwrap($data_entitlement_s3_secret_key) %>"
     volumes:
       - "minio-data:/data"
       - "minio-config:/.minio"
@@ -196,9 +196,9 @@ services:
     image: "<% if $image_repository { %><%= $image_repository %>/<% } %><%= $image_prefix %>ui-frontend:<%= $frontend_version %>"
     restart: "always"
     ports:
-      - "<%= $hdp_ui_http_port %>:80"
+      - "<%= $data_entitlement_ui_http_port %>:80"
 <%- if $ui_use_tls { %>
-      - "<%= $hdp_ui_https_port %>:443"
+      - "<%= $data_entitlement_ui_https_port %>:443"
 <%- } %>
     environment:
       - "HDP_ENABLE_TLS=<%= $ui_use_tls %>"
@@ -216,17 +216,17 @@ services:
     restart: "always"
     environment:
       - "PORT=3000"
-<%- if $hdp_query_auth == 'oidc' { %>
-      - "REACT_APP_SSO_ISSUER=<%= $hdp_query_oidc_issuer %>"
-      - "REACT_APP_SSO_CLIENT_ID=<%= $hdp_query_oidc_client_id %>"
+<%- if $data_entitlement_query_auth == 'oidc' { %>
+      - "REACT_APP_SSO_ISSUER=<%= $data_entitlement_query_oidc_issuer %>"
+      - "REACT_APP_SSO_CLIENT_ID=<%= $data_entitlement_query_oidc_client_id %>"
 <%- } %>
-<%- if $hdp_query_auth == 'pe_rbac' { %>
-      - "REACT_APP_PE_RBAC_SERVICE=https://<%= $dns_name %>:<%= $hdp_ui_https_port %>/api/proxy"
+<%- if $data_entitlement_query_auth == 'pe_rbac' { %>
+      - "REACT_APP_PE_RBAC_SERVICE=https://<%= $dns_name %>:<%= $data_entitlement_ui_https_port %>/api/proxy"
 <%- } %>
 <%- if $ui_use_tls { %>
-      - "REACT_APP_QUERY_SERVICE=https://<%= $dns_name %>:<%= $hdp_ui_https_port %>/api/"
+      - "REACT_APP_QUERY_SERVICE=https://<%= $dns_name %>:<%= $data_entitlement_ui_https_port %>/api/"
 <%- } else { %> 
-      - "REACT_APP_QUERY_SERVICE=http://<%= $dns_name %>:<%= $hdp_ui_https_port %>/api/"
+      - "REACT_APP_QUERY_SERVICE=http://<%= $dns_name %>:<%= $data_entitlement_ui_https_port %>/api/"
 <%- } %>
 volumes:
   redis:

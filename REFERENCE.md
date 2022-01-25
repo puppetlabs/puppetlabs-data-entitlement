@@ -8,19 +8,19 @@
 
 #### Public Classes
 
-* [`hdp::app_stack`](#hdpapp_stack): This class takes care of configuring a node to run HDP.
-* [`hdp::data_processor`](#hdpdata_processor): Simple class to enable the HDP data processor
-* [`hdp::resource_collector`](#hdpresource_collector): This class adds module to the node, which adds our custom facts. Without it, we don't have the ability to pull all ral resources
+* [`data_entitlement::app_stack`](#data_entitlementapp_stack): This class takes care of configuring a node to run HDP.
+* [`data_entitlement::data_processor`](#data_entitlementdata_processor): Simple class to enable the HDP data processor
+* [`data_entitlement::resource_collector`](#data_entitlementresource_collector): This class adds module to the node, which adds our custom facts. Without it, we don't have the ability to pull all ral resources
 
 #### Private Classes
 
-* `hdp::app_stack::config`
-* `hdp::app_stack::install`
-* `hdp::app_stack::service`
+* `data_entitlement::app_stack::config`
+* `data_entitlement::app_stack::install`
+* `data_entitlement::app_stack::service`
 
 ### Data types
 
-* [`HDP::Url`](#hdpurl): HDP::Url is a metatype that supports both single and multiple urls
+* [`HDP::Url`](#data_entitlementurl): HDP::Url is a metatype that supports both single and multiple urls
 
 ### Tasks
 
@@ -30,7 +30,7 @@
 
 ## Classes
 
-### <a name="hdpapp_stack"></a>`hdp::app_stack`
+### <a name="data_entitlementapp_stack"></a>`data_entitlement::app_stack`
 
 This class takes care of configuring a node to run HDP.
 
@@ -39,7 +39,7 @@ This class takes care of configuring a node to run HDP.
 ##### Configure via Hiera
 
 ```puppet
-include hdp::app_stack
+include data_entitlement::app_stack
 ```
 
 ##### Manage the docker group elsewhere
@@ -47,8 +47,8 @@ include hdp::app_stack
 ```puppet
 realize(Group['docker'])
 
-class { 'hdp::app_stack':
-  dns_name            => 'http://hdp-app.example.com',
+class { 'data_entitlement::app_stack':
+  dns_name            => 'http://data_entitlement-app.example.com',
   create_docker_group => false,
   require             => Group['docker'],
 }
@@ -57,61 +57,61 @@ class { 'hdp::app_stack':
 ##### Enable TLS using puppet-managed certs on the frontend
 
 ```puppet
-class { 'hdp::app_stack':
-  dns_name     => 'http://hdp-app.example.com',
+class { 'data_entitlement::app_stack':
+  dns_name     => 'http://data_entitlement-app.example.com',
   ui_use_tls   => true,
   ui_cert_files_puppet_managed => true,
-  ui_key_file  => $profile::ssl::hdp_keyfile,
-  ui_cert_file => $profile::ssl::hdp_full_chain,
+  ui_key_file  => $profile::ssl::data_entitlement_keyfile,
+  ui_cert_file => $profile::ssl::data_entitlement_full_chain,
 }
 ```
 
 ##### Enable TLS using manually managed certs on the frontend
 
 ```puppet
-class { 'hdp::app_stack':
-  dns_name                     => 'http://hdp-app.example.com',
+class { 'data_entitlement::app_stack':
+  dns_name                     => 'http://data_entitlement-app.example.com',
   ui_use_tls                   => true,
   ui_cert_files_puppet_managed => false,
-  ui_key_file                  => '/etc/pki/private/hdp-app.key',
+  ui_key_file                  => '/etc/pki/private/data_entitlement-app.key',
   ui_cert_file                 => '/etc/pki/certs/full-chain.crt',
 }
 ```
 
 #### Parameters
 
-The following parameters are available in the `hdp::app_stack` class:
+The following parameters are available in the `data_entitlement::app_stack` class:
 
 * [`create_docker_group`](#create_docker_group)
 * [`manage_docker`](#manage_docker)
 * [`log_driver`](#log_driver)
 * [`data_dir`](#data_dir)
-* [`hdp_port`](#hdp_port)
-* [`hdp_query_port`](#hdp_query_port)
-* [`hdp_query_auth`](#hdp_query_auth)
-* [`hdp_query_username`](#hdp_query_username)
-* [`hdp_query_password`](#hdp_query_password)
-* [`hdp_query_oidc_issuer`](#hdp_query_oidc_issuer)
-* [`hdp_query_oidc_client_id`](#hdp_query_oidc_client_id)
-* [`hdp_query_oidc_audience`](#hdp_query_oidc_audience)
-* [`hdp_query_pe_rbac_service`](#hdp_query_pe_rbac_service)
-* [`hdp_query_pe_rbac_role_id`](#hdp_query_pe_rbac_role_id)
-* [`hdp_query_pe_rbac_ca_cert_file`](#hdp_query_pe_rbac_ca_cert_file)
-* [`hdp_ui_http_port`](#hdp_ui_http_port)
-* [`hdp_ui_https_port`](#hdp_ui_https_port)
-* [`hdp_manage_es`](#hdp_manage_es)
-* [`hdp_es_host`](#hdp_es_host)
-* [`hdp_es_username`](#hdp_es_username)
-* [`hdp_es_password`](#hdp_es_password)
-* [`hdp_manage_s3`](#hdp_manage_s3)
-* [`hdp_s3_endpoint`](#hdp_s3_endpoint)
-* [`hdp_s3_region`](#hdp_s3_region)
-* [`hdp_s3_access_key`](#hdp_s3_access_key)
-* [`hdp_s3_secret_key`](#hdp_s3_secret_key)
-* [`hdp_s3_facts_bucket`](#hdp_s3_facts_bucket)
-* [`hdp_s3_force_path_style`](#hdp_s3_force_path_style)
-* [`hdp_s3_disable_ssl`](#hdp_s3_disable_ssl)
-* [`hdp_user`](#hdp_user)
+* [`data_entitlement_port`](#data_entitlement_port)
+* [`data_entitlement_query_port`](#data_entitlement_query_port)
+* [`data_entitlement_query_auth`](#data_entitlement_query_auth)
+* [`data_entitlement_query_username`](#data_entitlement_query_username)
+* [`data_entitlement_query_password`](#data_entitlement_query_password)
+* [`data_entitlement_query_oidc_issuer`](#data_entitlement_query_oidc_issuer)
+* [`data_entitlement_query_oidc_client_id`](#data_entitlement_query_oidc_client_id)
+* [`data_entitlement_query_oidc_audience`](#data_entitlement_query_oidc_audience)
+* [`data_entitlement_query_pe_rbac_service`](#data_entitlement_query_pe_rbac_service)
+* [`data_entitlement_query_pe_rbac_role_id`](#data_entitlement_query_pe_rbac_role_id)
+* [`data_entitlement_query_pe_rbac_ca_cert_file`](#data_entitlement_query_pe_rbac_ca_cert_file)
+* [`data_entitlement_ui_http_port`](#data_entitlement_ui_http_port)
+* [`data_entitlement_ui_https_port`](#data_entitlement_ui_https_port)
+* [`data_entitlement_manage_es`](#data_entitlement_manage_es)
+* [`data_entitlement_es_host`](#data_entitlement_es_host)
+* [`data_entitlement_es_username`](#data_entitlement_es_username)
+* [`data_entitlement_es_password`](#data_entitlement_es_password)
+* [`data_entitlement_manage_s3`](#data_entitlement_manage_s3)
+* [`data_entitlement_s3_endpoint`](#data_entitlement_s3_endpoint)
+* [`data_entitlement_s3_region`](#data_entitlement_s3_region)
+* [`data_entitlement_s3_access_key`](#data_entitlement_s3_access_key)
+* [`data_entitlement_s3_secret_key`](#data_entitlement_s3_secret_key)
+* [`data_entitlement_s3_facts_bucket`](#data_entitlement_s3_facts_bucket)
+* [`data_entitlement_s3_force_path_style`](#data_entitlement_s3_force_path_style)
+* [`data_entitlement_s3_disable_ssl`](#data_entitlement_s3_disable_ssl)
+* [`data_entitlement_user`](#data_entitlement_user)
 * [`compose_version`](#compose_version)
 * [`image_repository`](#image_repository)
 * [`elasticsearch_image`](#elasticsearch_image)
@@ -130,7 +130,7 @@ The following parameters are available in the `hdp::app_stack` class:
 * [`dns_name`](#dns_name)
 * [`dns_alt_names`](#dns_alt_names)
 * [`version`](#version)
-* [`hdp_version`](#hdp_version)
+* [`data_entitlement_version`](#data_entitlement_version)
 * [`ui_version`](#ui_version)
 * [`frontend_version`](#frontend_version)
 * [`docker_users`](#docker_users)
@@ -172,7 +172,7 @@ The data-root that docker will use to store volumes
 
 Default value: ``undef``
 
-##### <a name="hdp_port"></a>`hdp_port`
+##### <a name="data_entitlement_port"></a>`data_entitlement_port`
 
 Data type: `Integer`
 
@@ -180,7 +180,7 @@ Port to access HDP upload service
 
 Default value: `9091`
 
-##### <a name="hdp_query_port"></a>`hdp_query_port`
+##### <a name="data_entitlement_query_port"></a>`data_entitlement_query_port`
 
 Data type: `Integer`
 
@@ -188,13 +188,13 @@ Port to access HDP query service
 
 Default value: `9092`
 
-##### <a name="hdp_query_auth"></a>`hdp_query_auth`
+##### <a name="data_entitlement_query_auth"></a>`data_entitlement_query_auth`
 
 Data type: `Enum['basic_auth', 'oidc', 'pe_rbac', 'none']`
 
 What format to use for query authentication
-'basic_auth' will use hdp_query_username and hdp_query_password to handle auth.
-'oidc' will use hdp_query_oidc_issuer and hdp_query_oidc_client_id to handle auth.
+'basic_auth' will use data_entitlement_query_username and data_entitlement_query_password to handle auth.
+'oidc' will use data_entitlement_query_oidc_issuer and data_entitlement_query_oidc_client_id to handle auth.
 'oidc' currently only supports Okta as an authn provider.
 'pe_rbac' will cause the HDP to call out to a PE RBAC server to validate tokens from the UI.
 'pe_rbac' is currently not supported by the UI, so only use this if you plan on making queries via the API directly.
@@ -203,7 +203,7 @@ Defaults to 'none'
 
 Default value: `'none'`
 
-##### <a name="hdp_query_username"></a>`hdp_query_username`
+##### <a name="data_entitlement_query_username"></a>`data_entitlement_query_username`
 
 Data type: `Optional[String[1]]`
 
@@ -211,7 +211,7 @@ Username to add basic auth to query service
 
 Default value: ``undef``
 
-##### <a name="hdp_query_password"></a>`hdp_query_password`
+##### <a name="data_entitlement_query_password"></a>`data_entitlement_query_password`
 
 Data type: `Optional[Sensitive[String[1]]]`
 
@@ -222,7 +222,7 @@ Only algos of sha256 and sha512 are valid - $5$ and $6$. All other passwords wil
 
 Default value: ``undef``
 
-##### <a name="hdp_query_oidc_issuer"></a>`hdp_query_oidc_issuer`
+##### <a name="data_entitlement_query_oidc_issuer"></a>`data_entitlement_query_oidc_issuer`
 
 Data type: `Optional[String[1]]`
 
@@ -230,7 +230,7 @@ The OIDC issuer. Currently only Okta URLs are supported.
 
 Default value: ``undef``
 
-##### <a name="hdp_query_oidc_client_id"></a>`hdp_query_oidc_client_id`
+##### <a name="data_entitlement_query_oidc_client_id"></a>`data_entitlement_query_oidc_client_id`
 
 Data type: `Optional[String]`
 
@@ -238,7 +238,7 @@ The client ID of the app in the OIDC issuer
 
 Default value: ``undef``
 
-##### <a name="hdp_query_oidc_audience"></a>`hdp_query_oidc_audience`
+##### <a name="data_entitlement_query_oidc_audience"></a>`data_entitlement_query_oidc_audience`
 
 Data type: `Optional[String]`
 
@@ -246,18 +246,18 @@ The audience of the issued OIDC token
 
 Default value: ``undef``
 
-##### <a name="hdp_query_pe_rbac_service"></a>`hdp_query_pe_rbac_service`
+##### <a name="data_entitlement_query_pe_rbac_service"></a>`data_entitlement_query_pe_rbac_service`
 
 Data type: `Optional[Stdlib::HTTPUrl]`
 
 The URL of the pe_rbac_service
 Includes protocol, hostname, port, and rbac-api prefix if present, but no version number.
 Example: https://puppet:4433/rbac-api
-Required if hdp_query_auth = 'pe_rbac'
+Required if data_entitlement_query_auth = 'pe_rbac'
 
 Default value: ``undef``
 
-##### <a name="hdp_query_pe_rbac_role_id"></a>`hdp_query_pe_rbac_role_id`
+##### <a name="data_entitlement_query_pe_rbac_role_id"></a>`data_entitlement_query_pe_rbac_role_id`
 
 Data type: `Integer`
 
@@ -267,7 +267,7 @@ Superusers are allowed allowed to query the HDP.
 
 Default value: `1`
 
-##### <a name="hdp_query_pe_rbac_ca_cert_file"></a>`hdp_query_pe_rbac_ca_cert_file`
+##### <a name="data_entitlement_query_pe_rbac_ca_cert_file"></a>`data_entitlement_query_pe_rbac_ca_cert_file`
 
 Data type: `String`
 
@@ -277,7 +277,7 @@ Set to '-' to use system CAs
 
 Default value: `'/etc/puppetlabs/puppet/ssl/certs/ca.pem'`
 
-##### <a name="hdp_ui_http_port"></a>`hdp_ui_http_port`
+##### <a name="data_entitlement_ui_http_port"></a>`data_entitlement_ui_http_port`
 
 Data type: `Integer`
 
@@ -285,7 +285,7 @@ Port to access HDP UI via http
 
 Default value: `80`
 
-##### <a name="hdp_ui_https_port"></a>`hdp_ui_https_port`
+##### <a name="data_entitlement_ui_https_port"></a>`data_entitlement_ui_https_port`
 
 Data type: `Integer`
 
@@ -293,7 +293,7 @@ Port to access HDP UI via https if `ui_use_tls` is true
 
 Default value: `443`
 
-##### <a name="hdp_manage_es"></a>`hdp_manage_es`
+##### <a name="data_entitlement_manage_es"></a>`data_entitlement_manage_es`
 
 Data type: `Boolean`
 
@@ -303,7 +303,7 @@ If true, all other es parameters are ignored
 
 Default value: ``true``
 
-##### <a name="hdp_es_host"></a>`hdp_es_host`
+##### <a name="data_entitlement_es_host"></a>`data_entitlement_es_host`
 
 Data type: `String[1]`
 
@@ -311,7 +311,7 @@ Elasticsearch host to use
 
 Default value: `'http://elasticsearch:9200/'`
 
-##### <a name="hdp_es_username"></a>`hdp_es_username`
+##### <a name="data_entitlement_es_username"></a>`data_entitlement_es_username`
 
 Data type: `Optional[String[1]]`
 
@@ -319,7 +319,7 @@ Username to use to connect to elasticsearch
 
 Default value: ``undef``
 
-##### <a name="hdp_es_password"></a>`hdp_es_password`
+##### <a name="data_entitlement_es_password"></a>`data_entitlement_es_password`
 
 Data type: `Optional[Sensitive[String[1]]]`
 
@@ -327,7 +327,7 @@ Password to use to connect to elasticsearch
 
 Default value: ``undef``
 
-##### <a name="hdp_manage_s3"></a>`hdp_manage_s3`
+##### <a name="data_entitlement_manage_s3"></a>`data_entitlement_manage_s3`
 
 Data type: `Boolean`
 
@@ -336,7 +336,7 @@ All other s3 parameters are ignored.
 
 Default value: ``true``
 
-##### <a name="hdp_s3_endpoint"></a>`hdp_s3_endpoint`
+##### <a name="data_entitlement_s3_endpoint"></a>`data_entitlement_s3_endpoint`
 
 Data type: `String[1]`
 
@@ -344,15 +344,15 @@ The S3 Endpoint to use
 
 Default value: `'http://minio:9000/'`
 
-##### <a name="hdp_s3_region"></a>`hdp_s3_region`
+##### <a name="data_entitlement_s3_region"></a>`data_entitlement_s3_region`
 
 Data type: `String[1]`
 
 The S3 Region to use
 
-Default value: `'hdp'`
+Default value: `'data_entitlement'`
 
-##### <a name="hdp_s3_access_key"></a>`hdp_s3_access_key`
+##### <a name="data_entitlement_s3_access_key"></a>`data_entitlement_s3_access_key`
 
 Data type: `String[1]`
 
@@ -360,7 +360,7 @@ The S3 Access Key to use
 
 Default value: `'puppet'`
 
-##### <a name="hdp_s3_secret_key"></a>`hdp_s3_secret_key`
+##### <a name="data_entitlement_s3_secret_key"></a>`data_entitlement_s3_secret_key`
 
 Data type: `Sensitive[String[1]]`
 
@@ -368,7 +368,7 @@ The S3 Secret Key to use
 
 Default value: `Sensitive('puppetpuppet')`
 
-##### <a name="hdp_s3_facts_bucket"></a>`hdp_s3_facts_bucket`
+##### <a name="data_entitlement_s3_facts_bucket"></a>`data_entitlement_s3_facts_bucket`
 
 Data type: `String[1]`
 
@@ -376,7 +376,7 @@ The S3 Bucket to use for facts
 
 Default value: `'facts'`
 
-##### <a name="hdp_s3_force_path_style"></a>`hdp_s3_force_path_style`
+##### <a name="data_entitlement_s3_force_path_style"></a>`data_entitlement_s3_force_path_style`
 
 Data type: `Boolean`
 
@@ -384,7 +384,7 @@ Disable AWS specific S3 Path Style
 
 Default value: ``true``
 
-##### <a name="hdp_s3_disable_ssl"></a>`hdp_s3_disable_ssl`
+##### <a name="data_entitlement_s3_disable_ssl"></a>`data_entitlement_s3_disable_ssl`
 
 Data type: `Boolean`
 
@@ -392,7 +392,7 @@ Disable SSL for the S3 backend
 
 Default value: ``true``
 
-##### <a name="hdp_user"></a>`hdp_user`
+##### <a name="data_entitlement_user"></a>`data_entitlement_user`
 
 Data type: `String[1]`
 
@@ -452,7 +452,7 @@ Data type: `String`
 Prefix that comes before each image
 Can be used for easy name spacing under the same repository
 
-Default value: `'puppet/hdp-'`
+Default value: `'puppet/data_entitlement-'`
 
 ##### <a name="ca_server"></a>`ca_server`
 
@@ -565,7 +565,7 @@ The super version to use of the components. If this is set, sets all the sub-com
 
 Default value: ``undef``
 
-##### <a name="hdp_version"></a>`hdp_version`
+##### <a name="data_entitlement_version"></a>`data_entitlement_version`
 
 Data type: `String[1]`
 
@@ -578,7 +578,7 @@ Default value: `'0.0.1'`
 Data type: `Optional[String[1]]`
 
 The version of the HDP UI container to use
-If undef, defaults to hdp_version
+If undef, defaults to data_entitlement_version
 
 Default value: ``undef``
 
@@ -587,7 +587,7 @@ Default value: ``undef``
 Data type: `Optional[String[1]]`
 
 The version of the HDP UI TLS Frontend container to use
-If undef, defaults to hdp_version
+If undef, defaults to data_entitlement_version
 
 Default value: ``undef``
 
@@ -615,7 +615,7 @@ Data type: `String[1]`
 The HDP data service exposes some internal prometheus metrics.
 This variable can be used to change the HDP's prom metric namespace.
 
-Default value: `'hdp'`
+Default value: `'data_entitlement'`
 
 ##### <a name="access_log_level"></a>`access_log_level`
 
@@ -648,7 +648,7 @@ Can be used to mimic the /etc/hosts techniques commonly used in puppet.
 
 Default value: `{}`
 
-### <a name="hdpdata_processor"></a>`hdp::data_processor`
+### <a name="data_entitlementdata_processor"></a>`data_entitlement::data_processor`
 
 Simple class to enable the HDP data processor
 
@@ -659,8 +659,8 @@ Simple class to enable the HDP data processor
 ```puppet
 # Settings applied to both a primary and compilers
 class { 'profile::primary_and_compilers':
-  class { 'hdp::data_processor':
-    hdp_url => 'https://hdp.example.com:9091',
+  class { 'data_entitlement::data_processor':
+    data_entitlement_url => 'https://data_entitlement.example.com:9091',
   }
 }
 ```
@@ -670,10 +670,10 @@ class { 'profile::primary_and_compilers':
 ```puppet
 # Settings applied to both a primary and compilers
 class { 'profile::primary_and_compilers':
-  class { 'hdp::data_processor':
-    hdp_url =>
-      'https://hdp-prod.example.com:9091',
-      'https://hdp-staging.example.com:9091',
+  class { 'data_entitlement::data_processor':
+    data_entitlement_url =>
+      'https://data_entitlement-prod.example.com:9091',
+      'https://data_entitlement-staging.example.com:9091',
     ],
   }
 }
@@ -684,8 +684,8 @@ class { 'profile::primary_and_compilers':
 ```puppet
 # Settings applied to both a primary and compilers
 class { 'profile::primary_and_compilers':
-  class { 'hdp::data_processor':
-    hdp_url           => 'https://hdp.example.com:9091',
+  class { 'data_entitlement::data_processor':
+    data_entitlement_url           => 'https://data_entitlement.example.com:9091',
     collection_method => 'pdb_submit_only_server_urls',
   }
 }
@@ -696,8 +696,8 @@ class { 'profile::primary_and_compilers':
 ```puppet
 # Settings applied to both a primary and compilers
 class { 'profile::primary_and_compilers':
-  class { 'hdp::data_processor':
-    hdp_url                     => 'https://hdp.example.com:9091',
+  class { 'data_entitlement::data_processor':
+    data_entitlement_url                     => 'https://data_entitlement.example.com:9091',
     collection_method           => 'pdb_submit_only_server_urls',
     pdb_submit_only_server_urls => [
       'https://additional-destination.example.com',
@@ -710,23 +710,23 @@ class { 'profile::primary_and_compilers':
 
 ```puppet
 ---
-hdp::data_processor::hdp_url: 'https://hdp.example.com:9091'
+data_entitlement::data_processor::data_entitlement_url: 'https://data_entitlement.example.com:9091'
 ```
 
 ##### Configuration via Hiera sending data to two HDP servers
 
 ```puppet
 ---
-hdp::data_processor::hdp_url:
-  - 'https://hdp-prod.example.com:9091'
-  - 'https://hdp-staging.example.com:9091'
+data_entitlement::data_processor::data_entitlement_url:
+  - 'https://data_entitlement-prod.example.com:9091'
+  - 'https://data_entitlement-staging.example.com:9091'
 ```
 
 #### Parameters
 
-The following parameters are available in the `hdp::data_processor` class:
+The following parameters are available in the `data_entitlement::data_processor` class:
 
-* [`hdp_url`](#hdp_url)
+* [`data_entitlement_url`](#data_entitlement_url)
 * [`enable_reports`](#enable_reports)
 * [`manage_routes`](#manage_routes)
 * [`manage_pdb_submit_only_server_urls`](#manage_pdb_submit_only_server_urls)
@@ -738,7 +738,7 @@ The following parameters are available in the `hdp::data_processor` class:
 * [`reports`](#reports)
 * [`pdb_submit_only_server_urls`](#pdb_submit_only_server_urls)
 
-##### <a name="hdp_url"></a>`hdp_url`
+##### <a name="data_entitlement_url"></a>`data_entitlement_url`
 
 Data type: `HDP::Url`
 
@@ -790,7 +790,7 @@ Data type: `String[1]`
 
 
 
-Default value: `'hdp'`
+Default value: `'data_entitlement'`
 
 ##### <a name="facts_cache_terminus"></a>`facts_cache_terminus`
 
@@ -798,7 +798,7 @@ Data type: `String[1]`
 
 
 
-Default value: `'hdp'`
+Default value: `'data_entitlement'`
 
 ##### <a name="collect_resources"></a>`collect_resources`
 
@@ -822,7 +822,7 @@ Data type: `String[1]`
 
 A string containg the list of report processors to enable
 
-Default value: `'puppetdb,hdp'`
+Default value: `'puppetdb,data_entitlement'`
 
 ##### <a name="pdb_submit_only_server_urls"></a>`pdb_submit_only_server_urls`
 
@@ -830,19 +830,19 @@ Data type: `Optional[Array[Stdlib::HTTPSUrl]]`
 
 An array of PuppetDB instance URLs, including port number, to which
 commands should be sent, but which shouldn’t ever be queried for data
-needed during a Puppet run. This setting will use the value of `$hdp_url`
+needed during a Puppet run. This setting will use the value of `$data_entitlement_url`
 unless another value is provided.
 
 Default value: ``undef``
 
-### <a name="hdpresource_collector"></a>`hdp::resource_collector`
+### <a name="data_entitlementresource_collector"></a>`data_entitlement::resource_collector`
 
 This class adds module to the node, which adds our custom facts.
 Without it, we don't have the ability to pull all ral resources
 
 ## Data types
 
-### <a name="hdpurl"></a>`HDP::Url`
+### <a name="data_entitlementurl"></a>`HDP::Url`
 
 HDP::Url is a metatype that supports both single and multiple urls
 

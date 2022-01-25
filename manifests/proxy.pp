@@ -10,10 +10,10 @@
 # @param [String[1]] log_driver
 #   The log driver Docker will use
 #
-# @param [Integer] hdp_port
+# @param [Integer] data_entitlement_port
 #   Port to access HDP upload service
 #
-# @param [String[1]] hdp_user
+# @param [String[1]] data_entitlement_user
 #   User to run HDP proxy as. 
 #   Set to puppet if certname == dns_name
 #   
@@ -89,7 +89,7 @@
 # @param [Sensitive[String[1]]] token
 #    The HDP's access token. Gathered from the the HDP UI when creating this proxy.
 #
-# @param [Stdlib::HTTPUrl] hdp_address
+# @param [Stdlib::HTTPUrl] data_entitlement_address
 #    The URL of the HDP endpoint to send data to.
 #
 # @param [Optional[String[1]]] region
@@ -103,20 +103,20 @@
 #    but the HDP service will not respect this unless it is in "relaxed" auth mode (which, if you're reading this, it's not).
 #
 # @example Configure via Hiera
-#   include hdp::app_stack
+#   include data_entitlement::app_stack
 #
 # @example Manage the docker group elsewhere
 #   realize(Group['docker'])
 #
-#   class { 'hdp::app_stack':
-#     dns_name            => 'http://hdp-app.example.com',
+#   class { 'data_entitlement::app_stack':
+#     dns_name            => 'http://data_entitlement-app.example.com',
 #     create_docker_group => false,
 #     require             => Group['docker'],
 #   }
 #
-class hdp::proxy (
+class data_entitlement::proxy (
   String[1] $dns_name,
-  Stdlib::HTTPUrl $hdp_address,
+  Stdlib::HTTPUrl $data_entitlement_address,
   Sensitive[String[1]] $token,
 
   Array[String[1]] $dns_alt_names = [],
@@ -124,13 +124,13 @@ class hdp::proxy (
   Boolean $create_docker_group = true,
   Boolean $manage_docker = true,
   String[1] $log_driver = 'journald',
-  Integer $hdp_port = 9091,
+  Integer $data_entitlement_port = 9091,
 
-  String[1] $hdp_user = '11223',
+  String[1] $data_entitlement_user = '11223',
   String[1] $compose_version = '1.25.0',
   Optional[Array[String[1]]] $docker_users = undef,
   Optional[String[1]] $image_repository = undef,
-  String $image_prefix = 'puppet/hdp-',
+  String $image_prefix = 'puppet/data_entitlement-',
   Optional[String[1]] $version = 'latest',
 
   ## Either one of these two options can be configured
@@ -149,13 +149,13 @@ class hdp::proxy (
   Optional[String[1]] $organization = undef,
 
   Hash[String[1], String[1]] $extra_hosts = {},
-  String[1] $prometheus_namespace = 'hdp',
+  String[1] $prometheus_namespace = 'data_entitlement',
 ) {
-  contain hdp::proxy::install
-  contain hdp::proxy::config
-  contain hdp::proxy::service
+  contain data_entitlement::proxy::install
+  contain data_entitlement::proxy::config
+  contain data_entitlement::proxy::service
 
-  Class['hdp::proxy::install']
-  -> Class['hdp::proxy::config']
-  -> Class['hdp::proxy::service']
+  Class['data_entitlement::proxy::install']
+  -> Class['data_entitlement::proxy::config']
+  -> Class['data_entitlement::proxy::service']
 }

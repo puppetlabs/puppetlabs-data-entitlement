@@ -1,5 +1,5 @@
-@Library("hdp-utils")
-def Utils = new com.puppet.hdp.Utils()
+@Library("data_entitlement-utils")
+def Utils = new com.puppet.data_entitlement.Utils()
 
 pipeline {
     agent {

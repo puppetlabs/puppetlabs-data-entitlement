@@ -11,7 +11,7 @@ spec:
   containers:
     - name: "builder"
       imagePullPolicy: "Always"
-      image: "gcr.io/hdp-gcp-316600/puppet/hdp-build-image:latest"
+      image: "gcr.io/data_entitlement-gcp-316600/puppet/data_entitlement-build-image:latest"
       resources:
         requests:
           memory: "2G"

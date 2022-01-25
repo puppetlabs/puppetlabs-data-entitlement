@@ -3,11 +3,11 @@ require 'facter'
 require 'puppet'
 require 'json'
 
-Facter.add(:hdp_health) do
+Facter.add(:data_entitlement_health) do
   confine kernel: 'Linux'
   out = {}
   setcode do
-    if Dir.exist?('/opt/puppetlabs/hdp')
+    if Dir.exist?('/opt/puppetlabs/data_entitlement')
       begin
         image_data = {}
         cmd_output = Facter::Core::Execution.execute("docker ps --all --no-trunc --format '{{ json . }}'").split("\n")
@@ -20,7 +20,7 @@ Facter.add(:hdp_health) do
         containers.each do |container|
           key = container['Names']
           value = {}
-          next unless key.start_with?('hdp_')
+          next unless key.start_with?('data_entitlement_')
           value['image'] = container['Image'].split(':')[0]
           value['tag'] = container['Image'].split(':')[1]
           data = Facter::Core::Execution.execute("docker inspect --format '{{ json .Image }}' #{key}")

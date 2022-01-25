@@ -5,7 +5,7 @@ set -e
 #
 # This task does the dance requried to get docker-compose to use update the container for every service.
 #
-cd /opt/puppetlabs/hdp
+cd /opt/puppetlabs/data_entitlement
 for c in `docker-compose ps --services |sort`; do
   echo "redoing $c"
   docker-compose rm -s -f $c
