@@ -321,7 +321,7 @@ class data_entitlement::app_stack (
   Boolean $data_entitlement_s3_force_path_style = true,
   Boolean $data_entitlement_s3_disable_ssl = true,
 
-  String $image_prefix = 'puppet/data_entitlement-',
+  String $image_prefix = 'puppet/hdp-',
   Optional[String[1]] $version = undef,
   String[1] $data_entitlement_version = '0.0.1',
   Optional[String[1]] $ui_version = undef,

@@ -130,7 +130,7 @@ class data_entitlement::proxy (
   String[1] $compose_version = '1.25.0',
   Optional[Array[String[1]]] $docker_users = undef,
   Optional[String[1]] $image_repository = undef,
-  String $image_prefix = 'puppet/data_entitlement-',
+  String $image_prefix = 'puppet/hdp-',
   Optional[String[1]] $version = 'latest',
 
   ## Either one of these two options can be configured
