@@ -10,6 +10,7 @@
 
 * [`data_entitlement::app_stack`](#data_entitlementapp_stack): This class takes care of configuring a node to run HDP.
 * [`data_entitlement::data_processor`](#data_entitlementdata_processor): Simple class to enable the HDP data processor
+* [`data_entitlement::proxy`](#data_entitlementproxy): This class takes care of configuring a node to run an HDP Proxy/Gateway.
 * [`data_entitlement::resource_collector`](#data_entitlementresource_collector): This class adds module to the node, which adds our custom facts. Without it, we don't have the ability to pull all ral resources
 
 #### Private Classes
@@ -17,10 +18,13 @@
 * `data_entitlement::app_stack::config`
 * `data_entitlement::app_stack::install`
 * `data_entitlement::app_stack::service`
+* `data_entitlement::proxy::config`
+* `data_entitlement::proxy::install`
+* `data_entitlement::proxy::service`
 
 ### Data types
 
-* [`HDP::Url`](#data_entitlementurl): HDP::Url is a metatype that supports both single and multiple urls
+* [`HDP::Url`](#hdpurl): HDP::Url is a metatype that supports both single and multiple urls
 
 ### Tasks
 
@@ -122,6 +126,7 @@ The following parameters are available in the `data_entitlement::app_stack` clas
 * [`ca_cert_file`](#ca_cert_file)
 * [`key_file`](#key_file)
 * [`cert_file`](#cert_file)
+* [`allow_trust_on_first_use`](#allow_trust_on_first_use)
 * [`ui_use_tls`](#ui_use_tls)
 * [`ui_cert_files_puppet_managed`](#ui_cert_files_puppet_managed)
 * [`ui_key_file`](#ui_key_file)
@@ -452,7 +457,7 @@ Data type: `String`
 Prefix that comes before each image
 Can be used for easy name spacing under the same repository
 
-Default value: `'puppet/data_entitlement-'`
+Default value: `'puppet/hdp-'`
 
 ##### <a name="ca_server"></a>`ca_server`
 
@@ -492,6 +497,17 @@ Puppet PKI cert file - pem encoded.
 This or ca_server can be specified
 
 Default value: ``undef``
+
+##### <a name="allow_trust_on_first_use"></a>`allow_trust_on_first_use`
+
+Data type: `Boolean`
+
+If true, then the HDP will download the CA and setup its certs and keys from the server if they haven't been provided.
+Since the HDP doesn't have any CA before starting this process, it will automatically trust the first server that appears as
+ca_server. If you don't explicitly set this value to true, then this module will not deploy an HDP installation without being given
+ca_cert_file, key_file, and cert_file.
+
+Default value: ``true``
 
 ##### <a name="ui_use_tls"></a>`ui_use_tls`
 
@@ -835,6 +851,286 @@ unless another value is provided.
 
 Default value: ``undef``
 
+### <a name="data_entitlementproxy"></a>`data_entitlement::proxy`
+
+This class takes care of configuring a node to run an HDP Proxy/Gateway.
+
+#### Examples
+
+##### Configure via Hiera
+
+```puppet
+include data_entitlement::app_stack
+```
+
+##### Manage the docker group elsewhere
+
+```puppet
+realize(Group['docker'])
+
+class { 'data_entitlement::app_stack':
+  dns_name            => 'http://data_entitlement-app.example.com',
+  create_docker_group => false,
+  require             => Group['docker'],
+}
+```
+
+#### Parameters
+
+The following parameters are available in the `data_entitlement::proxy` class:
+
+* [`create_docker_group`](#create_docker_group)
+* [`manage_docker`](#manage_docker)
+* [`log_driver`](#log_driver)
+* [`data_entitlement_port`](#data_entitlement_port)
+* [`data_entitlement_user`](#data_entitlement_user)
+* [`compose_version`](#compose_version)
+* [`docker_users`](#docker_users)
+* [`image_repository`](#image_repository)
+* [`image_prefix`](#image_prefix)
+* [`ca_server`](#ca_server)
+* [`allow_trust_on_first_use`](#allow_trust_on_first_use)
+* [`ca_cert_file`](#ca_cert_file)
+* [`key_file`](#key_file)
+* [`cert_file`](#cert_file)
+* [`client_ca_cert_file`](#client_ca_cert_file)
+* [`client_key_file`](#client_key_file)
+* [`client_cert_file`](#client_cert_file)
+* [`dns_name`](#dns_name)
+* [`dns_alt_names`](#dns_alt_names)
+* [`version`](#version)
+* [`extra_hosts`](#extra_hosts)
+* [`prometheus_namespace`](#prometheus_namespace)
+* [`token`](#token)
+* [`data_entitlement_address`](#data_entitlement_address)
+* [`region`](#region)
+* [`organization`](#organization)
+
+##### <a name="create_docker_group"></a>`create_docker_group`
+
+Data type: `Boolean`
+
+Ensure the docker group is present.
+
+Default value: ``true``
+
+##### <a name="manage_docker"></a>`manage_docker`
+
+Data type: `Boolean`
+
+Install and manage docker as part of app_stack
+
+Default value: ``true``
+
+##### <a name="log_driver"></a>`log_driver`
+
+Data type: `String[1]`
+
+The log driver Docker will use
+
+Default value: `'journald'`
+
+##### <a name="data_entitlement_port"></a>`data_entitlement_port`
+
+Data type: `Integer`
+
+Port to access HDP upload service
+
+Default value: `9091`
+
+##### <a name="data_entitlement_user"></a>`data_entitlement_user`
+
+Data type: `String[1]`
+
+User to run HDP proxy as.
+Set to puppet if certname == dns_name
+
+Default value: `'11223'`
+
+##### <a name="compose_version"></a>`compose_version`
+
+Data type: `String[1]`
+
+The version of docker-compose to install
+
+Default value: `'1.25.0'`
+
+##### <a name="docker_users"></a>`docker_users`
+
+Data type: `Optional[Array[String[1]]]`
+
+Users to be added to the docker group on the system
+
+Default value: ``undef``
+
+##### <a name="image_repository"></a>`image_repository`
+
+Data type: `Optional[String[1]]`
+
+Image repository to pull images from - defaults to dockerhub.
+Can be used for airgapped environments/testing environments
+
+Default value: ``undef``
+
+##### <a name="image_prefix"></a>`image_prefix`
+
+Data type: `String`
+
+Prefix that comes before each image
+Can be used for easy name spacing under the same repository
+
+Default value: `'puppet/hdp-'`
+
+##### <a name="ca_server"></a>`ca_server`
+
+Data type: `Optional[String[1]]`
+
+URL of Puppet CA Server. If no keys/certs are provided, then
+HDP will attempt to provision its own certs and get them signed.
+Either this or ca_cert_file/key_file/cert_file can be specified.
+If autosign is not enabled, HDP will wait for the certificate to be signed
+by a puppet administrator
+
+Default value: ``undef``
+
+##### <a name="allow_trust_on_first_use"></a>`allow_trust_on_first_use`
+
+Data type: `Boolean`
+
+If true, then the HDP will download the CA and setup its certs and keys from the server if they haven't been provided.
+Since the HDP doesn't have any CA before starting this process, it will automatically trust the first server that appears as
+ca_server. If you don't explicitly set this value to true, then this module will not deploy an HDP installation without being given
+ca_cert_file, key_file, and cert_file.
+
+Default value: ``true``
+
+##### <a name="ca_cert_file"></a>`ca_cert_file`
+
+Data type: `Optional[String[1]]`
+
+CA certificate to validate connecting clients
+This or ca_server can be specified
+
+Default value: ``undef``
+
+##### <a name="key_file"></a>`key_file`
+
+Data type: `Optional[String[1]]`
+
+Private key for cert_file - pem encoded.
+This or ca_server can be specified
+
+Default value: ``undef``
+
+##### <a name="cert_file"></a>`cert_file`
+
+Data type: `Optional[String[1]]`
+
+Puppet PKI cert file - pem encoded.
+This or ca_server can be specified
+
+Default value: ``undef``
+
+##### <a name="client_ca_cert_file"></a>`client_ca_cert_file`
+
+Data type: `Optional[String[1]]`
+
+When submitting to the remote HDP, use this CA to validate the server.
+Should not be used in production - system CAs are fine.
+
+Default value: ``undef``
+
+##### <a name="client_key_file"></a>`client_key_file`
+
+Data type: `Optional[String[1]]`
+
+When submitting to the remote HDP, use this key file as client auth.
+
+Default value: ``undef``
+
+##### <a name="client_cert_file"></a>`client_cert_file`
+
+Data type: `Optional[String[1]]`
+
+When submitting to the remote HDP, use this cert file as client auth.
+
+Default value: ``undef``
+
+##### <a name="dns_name"></a>`dns_name`
+
+Data type: `String[1]`
+
+Name that puppet server will find HDP at.
+Should match the names in cert_file if provided.
+If ca_server is used instead, this name will be used as certname.
+
+##### <a name="dns_alt_names"></a>`dns_alt_names`
+
+Data type: `Array[String[1]]`
+
+Extra dns names attached to the puppet cert, can be used to bypass certname collisions
+
+Default value: `[]`
+
+##### <a name="version"></a>`version`
+
+Data type: `Optional[String[1]]`
+
+The version to use of the HDP Proxy.
+Defaults to latest
+
+Default value: `'latest'`
+
+##### <a name="extra_hosts"></a>`extra_hosts`
+
+Data type: `Hash[String[1], String[1]]`
+
+This parameter can be used to set hostname mappings in docker-compose file.
+Can be used to mimic the /etc/hosts techniques commonly used in puppet.
+
+Default value: `{}`
+
+##### <a name="prometheus_namespace"></a>`prometheus_namespace`
+
+Data type: `String[1]`
+
+The HDP data service exposes some internal prometheus metrics.
+This variable can be used to change the HDP's prom metric namespace.
+
+Default value: `'data_entitlement'`
+
+##### <a name="token"></a>`token`
+
+Data type: `Sensitive[String[1]]`
+
+The HDP's access token. Gathered from the the HDP UI when creating this proxy.
+
+##### <a name="data_entitlement_address"></a>`data_entitlement_address`
+
+Data type: `Stdlib::HTTPUrl`
+
+The URL of the HDP endpoint to send data to.
+
+##### <a name="region"></a>`region`
+
+Data type: `Optional[String[1]]`
+
+A region UUID for an HDP region.
+The HDP Proxy will attempt to submit this data under this region if it is permitted to submit data under multiple regions,
+or the HDP service is set to "relaxed" auth.
+
+Default value: ``undef``
+
+##### <a name="organization"></a>`organization`
+
+Data type: `Optional[String[1]]`
+
+An organization UUID for HDP.
+The HDP Proxy will attempt to submit its data under this organization,
+but the HDP service will not respect this unless it is in "relaxed" auth mode (which, if you're reading this, it's not).
+
+Default value: ``undef``
+
 ### <a name="data_entitlementresource_collector"></a>`data_entitlement::resource_collector`
 
 This class adds module to the node, which adds our custom facts.
@@ -842,7 +1138,7 @@ Without it, we don't have the ability to pull all ral resources
 
 ## Data types
 
-### <a name="data_entitlementurl"></a>`HDP::Url`
+### <a name="hdpurl"></a>`HDP::Url`
 
 HDP::Url is a metatype that supports both single and multiple urls
 
