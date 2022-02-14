@@ -40,15 +40,6 @@ jobs:
             echo $documentation
             exit 1
           fi
-          if output=$(git status --porcelain) && [ ! -z "$output" ]; then
-            echo "Here is the current git status:"
-            git status
-            echo
-            echo "The following changes were detected:"
-            git --no-pager diff
-            echo "Please submit a PR of changes after running 'pdk bundle exec puppet strings generate --format markdown'"
-            exit 1
-          fi
       - name: Validate Changelog
         env:
           CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
