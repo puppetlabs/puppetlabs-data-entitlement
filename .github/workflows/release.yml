@@ -1,6 +1,9 @@
 name: Publish Module
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - "*.*.*"
 
 jobs:
   publish-module:
@@ -13,6 +16,8 @@ jobs:
           ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
+      - name: Set Metadata
+        run: 'cat ./metadata.json | jq .version=\"${GITHUB_REF##*/}\" > ./md.json && mv ./md.json metadata.json'
       - name: Get Version
         id: gv
         run: |
