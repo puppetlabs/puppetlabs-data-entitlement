@@ -40,27 +40,6 @@ jobs:
             echo $documentation
             exit 1
           fi
-      - name: Validate Changelog
-        env:
-          CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          pdk bundle exec rake changelog
-          check_prs=$(grep -c '### UNCATEGORIZED PRS; LABEL THEM ON GITHUB' CHANGELOG.md) || echo "Check PRs success"
-          if [ $check_prs -gt 0 ]; then
-            echo "Uncategorized PRs found. Please address missing labels in the PRs below:"
-            git --no-pager diff CHANGELOG.md
-            exit 1
-          fi
-          if output=$(git status --porcelain) && [ ! -z "$output" ]; then
-            echo "Here is the current git status:"
-            git status
-            echo
-            echo "The following changes were detected:"
-            git --no-pager diff
-            echo "Uncommitted PRs found in the changelog. Please submit a PR of changes after running 'pdk bundle exec rake changelog'"
-            exit 1
-          fi
       - name: Tag Release
         uses: ncipollo/release-action@v1
         with:
