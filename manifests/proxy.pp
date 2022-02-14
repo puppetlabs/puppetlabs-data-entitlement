@@ -74,7 +74,7 @@
 # @param [Array[String[1]]] dns_alt_names
 #   Extra dns names attached to the puppet cert, can be used to bypass certname collisions
 #
-# @param [String[1]] version
+# @param [Optional[String[1]]] version
 #   The version to use of the HDP Proxy.
 #   Defaults to latest
 #
