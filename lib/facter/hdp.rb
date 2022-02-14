@@ -3,6 +3,8 @@ require 'facter'
 require 'puppet'
 require 'json'
 
+## Add a custom fact that scrapes the current health of the HDP app stack
+## Also grab the current owner the puppet certs and keys
 Facter.add(:data_entitlement_health) do
   confine kernel: 'Linux'
   out = {}

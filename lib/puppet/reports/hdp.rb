@@ -5,6 +5,8 @@ require 'puppet/util/puppetdb'
 require 'puppet/util/puppetdb/command_names'
 require 'puppet/util/data_entitlement'
 
+## Obviously this function registers a report with the HDP
+## Reports support multiple termini, so we don't need to forward to PuppetDB ourselves.
 Puppet::Reports.register_report(:data_entitlement) do
   desc <<-DESC
     A copy of the standard http report processor, but sends to data_entitlement.
@@ -12,6 +14,7 @@ Puppet::Reports.register_report(:data_entitlement) do
 
   include Puppet::Util::Hdp
   include Puppet::Util::Puppetdb
+  ## A command to StoreReports in PuppetDB/the HDP. Ripped from Puppet's terminus.
   CommandStoreReport = Puppet::Util::Puppetdb::CommandNames::CommandStoreReport
 
   def settings

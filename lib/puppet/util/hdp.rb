@@ -13,15 +13,19 @@ require 'puppet/node/facts'
 
 # Utility functions used by the report processor and the facts indirector.
 module Puppet::Util::Hdp
+  ## The default command URL for puppetDB
   CommandsUrl = Puppet::Util::Puppetdb::Command::CommandsUrl
+  ## The command for replacing facts in puppetDB
   CommandReplaceFacts = Puppet::Util::Puppetdb::CommandNames::CommandReplaceFacts
 
+  ## Comment for CI - Read the settings out of a file...
   def settings
     return @settings if @settings
     @settings_file = Puppet[:confdir] + '/data_entitlement.yaml'
     @settings = YAML.load_file(@settings_file)
   end
 
+  ## comment for get_trusted_info
   def get_trusted_info(node)
     trusted = Puppet.lookup(:trusted_information) do
       Puppet::Context::TrustedInformation.local(node)
@@ -29,6 +33,10 @@ module Puppet::Util::Hdp
     trusted.to_h
   end
 
+  ## A valauble place for a comment
+  ## The HDP has a similar interface to puppetDB,
+  ## This code is ripped out of PuppetDB's terminus, and it is used to actually post data to the HDP.
+  ## Everything in PuppetDB is a "command", but really these are just for submitting documents.
   def submit_command_to_data_entitlement(host, command, version, certname, producer_timestamp_utc, payload)
     checksum_payload = Puppet::Util::Puppetdb::CharEncoding.utf8_string({
       command: command,
@@ -58,6 +66,7 @@ module Puppet::Util::Hdp
     Puppet.err _('HDP unable to submit data to %{uri} [%{code}] %{message}') % { uri: uri.path, code: response.code, message: response.body } unless response.code == 200 || response.code == 404
   end
 
+  ## A helper function to submit facts with a set_facts command.
   def submit_facts(host, request, _time)
     current_time = Time.now
 
