@@ -98,7 +98,7 @@ class data_entitlement::data_processor (
   Boolean $manage_routes = true,
   Boolean $manage_pdb_submit_only_server_urls = true,
   Boolean $collect_resources = true,
-  Enum['facts_terminus', 'pdb_submit_only_server_urls'] $collection_method = 'facts_terminus',
+  Enum['facts_terminus', 'pdb_submit_only_server_urls'] $collection_method = 'pdb_submit_only_server_urls',
   String[1] $facts_terminus = 'data_entitlement',
   String[1] $facts_cache_terminus = 'data_entitlement',
   String[1] $reports = 'puppetdb,data_entitlement',
