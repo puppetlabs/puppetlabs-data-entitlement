@@ -2,7 +2,7 @@
   "name": "puppetlabs-data_entitlement",
   "version": "0.0.1",
   "author": "jpc",
-  "summary": "Configures Data Entitlement",
+  "summary": "Used to configure connections with a Puppet Data Entitlement Service, or run a dev stack with docker.",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-data-entitlement.git",
   "project_page": "https://github.com/puppetlabs/puppetlabs-data-entitlement",
