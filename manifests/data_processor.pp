@@ -2,7 +2,7 @@
 #
 # @summary Simple class to enable the HDP data processor
 #
-# @param [HDP::Url] data_entitlement_url
+# @param [DataEntitlement::Url] data_entitlement_url
 #   The url to send data to.
 #
 # @param [Boolean] enable_reports
@@ -93,7 +93,7 @@
 #     - 'https://data_entitlement-staging.example.com:9091'
 #
 class data_entitlement::data_processor (
-  HDP::Url $data_entitlement_url,
+  DataEntitlement::Url $data_entitlement_url,
   Boolean $enable_reports = true,
   Boolean $manage_routes = true,
   Boolean $manage_pdb_submit_only_server_urls = true,
