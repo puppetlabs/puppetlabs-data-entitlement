@@ -15,7 +15,8 @@ class data_entitlement::app_stack::config () {
   ## It is recommended that users user their own publically KI certs for these.
   ## If mount_host_certs is true, then we should use the host agents certs,
   ## but we also should for if ui_use_tls is enabled but no paths are provided.
-  if $_mount_host_certs or ($data_entitlement::app_stack::ui_use_tls and !$data_entitlement::app_stack::ui_cert_file and !$data_entitlement::app_stack::ui_key_file) {
+  if $_mount_host_certs or ($data_entitlement::app_stack::ui_use_tls
+  and !$data_entitlement::app_stack::ui_cert_file and !$data_entitlement::app_stack::ui_key_file) {
     $_final_ui_cert_file = "/etc/puppetlabs/puppet/ssl/certs/${trusted['certname']}.pem"
     $_final_ui_key_file = "/etc/puppetlabs/puppet/ssl/private_keys/${trusted['certname']}.pem"
   } else {

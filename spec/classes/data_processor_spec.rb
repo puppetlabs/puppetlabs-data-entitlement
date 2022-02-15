@@ -11,6 +11,7 @@ describe 'data_entitlement::data_processor' do
         let(:params) do
           {
             'data_entitlement_url' => 'https://data_entitlement.example.com:9091',
+            'collection_method' => 'facts_terminus',
           }
         end
 
@@ -54,6 +55,7 @@ describe 'data_entitlement::data_processor' do
               'https://data_entitlement-prod.example.com:9091',
               'https://data_entitlement-stage.example.com:9091',
             ],
+            'collection_method' => 'facts_terminus',
           }
         end
 
@@ -68,6 +70,7 @@ describe 'data_entitlement::data_processor' do
         let(:params) do
           {
             'data_entitlement_url' => 'https://data_entitlement-prod.example.com:9091',
+            'collection_method' => 'facts_terminus',
             'keep_node_re' => '^a.*',
           }
         end
@@ -83,7 +86,6 @@ describe 'data_entitlement::data_processor' do
         let(:params) do
           {
             'data_entitlement_url' => 'https://data_entitlement-prod.example.com:9091',
-            'collection_method' => 'pdb_submit_only_server_urls',
           }
         end
 
@@ -110,7 +112,6 @@ describe 'data_entitlement::data_processor' do
           let(:params) do
             {
               'data_entitlement_url' => 'https://data_entitlement-prod.example.com:9091',
-              'collection_method' => 'pdb_submit_only_server_urls',
             }
           end
 
@@ -132,7 +133,6 @@ describe 'data_entitlement::data_processor' do
                 'https://data_entitlement-prod.example.com:9091',
                 'https://data_entitlement-stage.example.com:9091',
               ],
-              'collection_method' => 'pdb_submit_only_server_urls',
             }
           end
 
@@ -151,7 +151,6 @@ describe 'data_entitlement::data_processor' do
           let(:params) do
             {
               'data_entitlement_url' => 'https://data_entitlement-prod.example.com:9091',
-              'collection_method' => 'pdb_submit_only_server_urls',
               'pdb_submit_only_server_urls' => [
                 'https://additional-destination1.example.com',
                 'https://additional-destination2.example.com',
@@ -176,7 +175,6 @@ describe 'data_entitlement::data_processor' do
           let(:params) do
             {
               'data_entitlement_url' => 'https://data_entitlement-prod.example.com:9091',
-              'collection_method' => 'pdb_submit_only_server_urls',
               'pdb_submit_only_server_urls' => [
                 'https://data_entitlement-prod.example.com:9091',
                 'https://additional-destination.example.com',
