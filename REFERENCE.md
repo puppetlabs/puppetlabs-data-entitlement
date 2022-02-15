@@ -24,7 +24,7 @@
 
 ### Data types
 
-* [`HDP::Url`](#hdpurl): HDP::Url is a metatype that supports both single and multiple urls
+* [`Data_entitlement::Url`](#data_entitlementurl): Data_entitlement::Url is a metatype that supports both single and multiple urls
 
 ### Tasks
 
@@ -756,7 +756,7 @@ The following parameters are available in the `data_entitlement::data_processor`
 
 ##### <a name="data_entitlement_url"></a>`data_entitlement_url`
 
-Data type: `HDP::Url`
+Data type: `Data_entitlement::Url`
 
 The url to send data to.
 
@@ -1138,9 +1138,9 @@ Without it, we don't have the ability to pull all ral resources
 
 ## Data types
 
-### <a name="hdpurl"></a>`HDP::Url`
+### <a name="data_entitlementurl"></a>`Data_entitlement::Url`
 
-HDP::Url is a metatype that supports both single and multiple urls
+Data_entitlement::Url is a metatype that supports both single and multiple urls
 
 Alias of
 
