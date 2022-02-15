@@ -186,8 +186,14 @@ describe 'data_entitlement::app_stack' do
             is_expected.to contain_docker_compose('data_entitlement')
               .with_compose_files(['/opt/puppetlabs/data_entitlement/docker-compose.yaml'])
           }
-          it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/private_keys/true\.data_entitlement\.pem:/etc/ssl/key\.pem:ro\"}) }
-          it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml').with_content(%r{- \"/etc/puppetlabs/puppet/ssl/certs/true\.data_entitlement\.pem:/etc/ssl/cert\.pem:ro\"}) }
+          it {
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
+              .with_content(%r{- \"/etc/puppetlabs/puppet/ssl/private_keys/true\.data_entitlement\.pem:/etc/ssl/key\.pem:ro\"})
+          }
+          it {
+            is_expected.to contain_file('/opt/puppetlabs/data_entitlement/docker-compose.yaml')
+              .with_content(%r{- \"/etc/puppetlabs/puppet/ssl/certs/true\.data_entitlement\.pem:/etc/ssl/cert\.pem:ro\"})
+          }
         end
       end
 
