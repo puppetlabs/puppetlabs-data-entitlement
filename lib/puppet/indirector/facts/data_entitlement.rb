@@ -6,15 +6,15 @@ require 'json'
 require 'time'
 
 # HDP Fact collector
-class Puppet::Node::Facts::Hdp < Puppet::Node::Facts::Puppetdb
-  desc 'Save facts to HDP, then Puppetdb.'
+class Puppet::Node::Facts::Data_entitlement < Puppet::Node::Facts::Puppetdb
+  desc 'Save facts to Data_entitlement, then Puppetdb.'
 
-  include Puppet::Util::Hdp
+  include Puppet::Util::Data_entitlement
 
-  ## Actually save the data to the HDP.
+  ## Actually save the data to the Data entitlement.
   def save(request)
     begin
-      Puppet.info 'Submitting facts to HDP'
+      Puppet.info 'Submitting facts to Data entitlement'
       current_time = Time.now
 
       keep_nodes_re = Regexp.new(settings['keep_nodes'])
@@ -26,10 +26,10 @@ class Puppet::Node::Facts::Hdp < Puppet::Node::Facts::Puppetdb
         end
       end
     rescue StandardError => e
-      Puppet.err "Could not send facts to HDP: #{e}
+      Puppet.err "Could not send facts to Data entitlement: #{e}
 #{e.backtrace}"
     end
-    ## Data has been sent to HDP - now delete our data_entitlement facts and forward to puppetdb
+    ## Data has been sent to Data entitlement - now delete our data_entitlement facts and forward to puppetdb
     r = request.instance.dup
     r.values = r.values.dup
     r.values.delete('data_entitlement')

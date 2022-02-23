@@ -2,7 +2,7 @@ require 'puppet/node'
 require 'puppet/indirector/rest'
 
 # HDP Indirector
-class Puppet::Node::Hdp < Puppet::Indirector::REST
+class Puppet::Node::Data_entitlement < Puppet::Indirector::REST
   # Mock for find terminus call, just to match the interface
   def find(request); end
 
