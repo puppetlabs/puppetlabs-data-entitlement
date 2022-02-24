@@ -6,7 +6,7 @@ require 'json'
 require 'time'
 
 # HDP Fact collector
-class Puppet::Node::Facts::Data_entitlement < Puppet::Node::Facts::Puppetdb
+class Puppet::Node::Facts::DataEntitlement < Puppet::Node::Facts::Puppetdb
   desc 'Save facts to Data_entitlement, then Puppetdb.'
 
   include Puppet::Util::Data_entitlement

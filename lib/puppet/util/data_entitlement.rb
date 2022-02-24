@@ -12,7 +12,7 @@ require 'puppet/util/puppetdb/char_encoding'
 require 'puppet/node/facts'
 
 # Utility functions used by the report processor and the facts indirector.
-module Puppet::Util::Data_entitlement
+module Puppet::Util::DataEntitlement
   ## The default command URL for puppetDB
   CommandsUrl = Puppet::Util::Puppetdb::Command::CommandsUrl
   ## The command for replacing facts in puppetDB
