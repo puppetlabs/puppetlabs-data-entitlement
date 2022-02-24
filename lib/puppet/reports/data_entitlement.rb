@@ -12,7 +12,7 @@ Puppet::Reports.register_report(:data_entitlement) do
     A copy of the standard http report processor, but sends to data_entitlement.
   DESC
 
-  include Puppet::Util::Hdp
+  include Puppet::Util::Data_entitlement
   include Puppet::Util::Puppetdb
   ## A command to StoreReports in PuppetDB/the HDP. Ripped from Puppet's terminus.
   CommandStoreReport = Puppet::Util::Puppetdb::CommandNames::CommandStoreReport
