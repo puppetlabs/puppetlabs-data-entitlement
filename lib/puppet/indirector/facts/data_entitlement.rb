@@ -6,10 +6,10 @@ require 'json'
 require 'time'
 
 # HDP Fact collector
-class Puppet::Node::Facts::Hdp < Puppet::Node::Facts::Puppetdb
+class Puppet::Node::Facts::DataEntitlement < Puppet::Node::Facts::Puppetdb
   desc 'Save facts to HDP, then Puppetdb.'
 
-  include Puppet::Util::Hdp
+  include Puppet::Util::DataEntitlement
 
   ## Actually save the data to the HDP.
   def save(request)
