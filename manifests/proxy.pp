@@ -24,7 +24,7 @@
 #   Users to be added to the docker group on the system
 #
 # @param [Optional[String[1]]] image_repository
-#   Image repository to pull images from - defaults to dockerhub.
+#   Image repository to pull images from - defaults to gcr.io/hdp-gcp-316600/, which is where HDP images are hosted.
 #   Can be used for airgapped environments/testing environments
 #
 # @param [String] image_prefix
@@ -129,7 +129,7 @@ class data_entitlement::proxy (
   String[1] $data_entitlement_user = '11223',
   String[1] $compose_version = '1.25.0',
   Optional[Array[String[1]]] $docker_users = undef,
-  Optional[String[1]] $image_repository = undef,
+  Optional[String[1]] $image_repository = "gcr.io/hdp-gcp-316600",
   String $image_prefix = 'puppet/hdp-',
   Optional[String[1]] $version = 'latest',
 
