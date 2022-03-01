@@ -129,7 +129,7 @@ class data_entitlement::proxy (
   String[1] $data_entitlement_user = '11223',
   String[1] $compose_version = '1.25.0',
   Optional[Array[String[1]]] $docker_users = undef,
-  Optional[String[1]] $image_repository = "gcr.io/hdp-gcp-316600",
+  Optional[String[1]] $image_repository = 'gcr.io/hdp-gcp-316600',
   String $image_prefix = 'puppet/hdp-',
   Optional[String[1]] $version = 'latest',
 
