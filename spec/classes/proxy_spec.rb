@@ -14,24 +14,7 @@ describe 'data_entitlement::proxy' do
 
       context 'with defaults' do
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_group('docker').with_ensure('present') }
-        it { is_expected.to contain_class('docker').with_log_driver('journald') }
-        it { is_expected.to contain_class('docker::compose').with_ensure('present') }
         it { is_expected.to contain_file('/opt/puppetlabs/data_entitlement').with_ensure('directory') }
-        it {
-          is_expected.to contain_docker_compose('data_entitlement-proxy')
-            .with_compose_files(['/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml'])
-            .that_requires('File[/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml]')
-            .that_subscribes_to('File[/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml]')
-        }
-        it {
-          is_expected.to contain_file('/opt/puppetlabs/data_entitlement/proxy/docker-compose.yaml')
-            .with_owner('root')
-            .with_group('docker')
-            .with_content(%r{NAME=data_entitlement\.test\.com})
-            .with_content(%r{- "9091:9091"})
-            .with_content(%r{- "HDP_BACKENDS_HDP_ADDRESS=https://data_entitlement\.com"})
-        }
         dir_list = [
           '/opt/puppetlabs/data_entitlement',
           '/opt/puppetlabs/data_entitlement/ssl',

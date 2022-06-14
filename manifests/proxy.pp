@@ -1,27 +1,12 @@
 #
 # This class takes care of configuring a node to run an HDP Proxy/Gateway.
 #
-# @param [Boolean] create_docker_group
-#   Ensure the docker group is present.
-#
-# @param [Boolean] manage_docker
-#   Install and manage docker as part of app_stack
-#
-# @param [String[1]] log_driver
-#   The log driver Docker will use
-#
 # @param [Integer] data_entitlement_port
 #   Port to access HDP upload service
 #
 # @param [String[1]] data_entitlement_user
 #   User to run HDP proxy as. 
 #   Set to puppet if certname == dns_name
-#   
-# @param [String[1]] compose_version
-#   The version of docker-compose to install
-#
-# @param [Optional[Array[String[1]]]] docker_users
-#   Users to be added to the docker group on the system
 #
 # @param [Optional[String[1]]] image_repository
 #   Image repository to pull images from - defaults to gcr.io/hdp-gcp-316600/, which is where HDP images are hosted.
@@ -102,17 +87,24 @@
 #    The HDP Proxy will attempt to submit its data under this organization, 
 #    but the HDP service will not respect this unless it is in "relaxed" auth mode (which, if you're reading this, it's not).
 #
+# @param [Optional[String[1]]] package
+#   The HDP proxy package name
+#   Defaults to hdp-proxy
+#
+# @param [Optional[String[1]]] service
+#   The name of the HDP proxy service.
+#   Defaults to hdp-proxy
+#
+# @param [Optional[String[1]]] service_status
+#   Indicates whether the HDP proxy service should be running or stopped
+#   Defaults to running
+#
+# @param [Optional[String[1]]] service_enable
+#   Indicates whether the HDP proxy service should be enabled
+#   Defaults to true
+#
 # @example Configure via Hiera
 #   include data_entitlement::app_stack
-#
-# @example Manage the docker group elsewhere
-#   realize(Group['docker'])
-#
-#   class { 'data_entitlement::app_stack':
-#     dns_name            => 'http://data_entitlement-app.example.com',
-#     create_docker_group => false,
-#     require             => Group['docker'],
-#   }
 #
 class data_entitlement::proxy (
   String[1] $dns_name,
@@ -121,14 +113,9 @@ class data_entitlement::proxy (
 
   Array[String[1]] $dns_alt_names = [],
 
-  Boolean $create_docker_group = true,
-  Boolean $manage_docker = true,
-  String[1] $log_driver = 'journald',
   Integer $data_entitlement_port = 9091,
 
   String[1] $data_entitlement_user = '11223',
-  String[1] $compose_version = '1.25.0',
-  Optional[Array[String[1]]] $docker_users = undef,
   Optional[String[1]] $image_repository = 'gcr.io/hdp-gcp-316600',
   String $image_prefix = 'puppet/hdp-',
   Optional[String[1]] $version = 'latest',
@@ -150,6 +137,12 @@ class data_entitlement::proxy (
 
   Hash[String[1], String[1]] $extra_hosts = {},
   String[1] $prometheus_namespace = 'data_entitlement',
+
+  String[1] $package         = 'hdp-proxy',
+  String[1] $service         = 'hdp-proxy',
+  String[1] $service_status  = 'running',
+  Boolean   $service_enabled = true,
+
 ) {
   contain data_entitlement::proxy::install
   contain data_entitlement::proxy::config

@@ -879,13 +879,8 @@ class { 'data_entitlement::app_stack':
 
 The following parameters are available in the `data_entitlement::proxy` class:
 
-* [`create_docker_group`](#create_docker_group)
-* [`manage_docker`](#manage_docker)
-* [`log_driver`](#log_driver)
 * [`data_entitlement_port`](#data_entitlement_port)
 * [`data_entitlement_user`](#data_entitlement_user)
-* [`compose_version`](#compose_version)
-* [`docker_users`](#docker_users)
 * [`image_repository`](#image_repository)
 * [`image_prefix`](#image_prefix)
 * [`ca_server`](#ca_server)
@@ -906,30 +901,6 @@ The following parameters are available in the `data_entitlement::proxy` class:
 * [`region`](#region)
 * [`organization`](#organization)
 
-##### <a name="create_docker_group"></a>`create_docker_group`
-
-Data type: `Boolean`
-
-Ensure the docker group is present.
-
-Default value: ``true``
-
-##### <a name="manage_docker"></a>`manage_docker`
-
-Data type: `Boolean`
-
-Install and manage docker as part of app_stack
-
-Default value: ``true``
-
-##### <a name="log_driver"></a>`log_driver`
-
-Data type: `String[1]`
-
-The log driver Docker will use
-
-Default value: `'journald'`
-
 ##### <a name="data_entitlement_port"></a>`data_entitlement_port`
 
 Data type: `Integer`
@@ -946,22 +917,6 @@ User to run HDP proxy as.
 Set to puppet if certname == dns_name
 
 Default value: `'11223'`
-
-##### <a name="compose_version"></a>`compose_version`
-
-Data type: `String[1]`
-
-The version of docker-compose to install
-
-Default value: `'1.25.0'`
-
-##### <a name="docker_users"></a>`docker_users`
-
-Data type: `Optional[Array[String[1]]]`
-
-Users to be added to the docker group on the system
-
-Default value: ``undef``
 
 ##### <a name="image_repository"></a>`image_repository`
 
