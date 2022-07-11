@@ -31,7 +31,7 @@ Facter.add(:data_entitlement_health) do
         end
 
         out['image_data'] = image_data
-      rescue # rubocop:disable Lint/HandleExceptions
+      rescue # rubocop:disable Lint/SuppressedException
       end
     end
 

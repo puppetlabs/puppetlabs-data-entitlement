@@ -5,6 +5,10 @@
   delete: true
 appveyor.yml:
   delete: true
+.github/workflows/auto_release.yml:
+  unmanaged: false
+.github/workflows/release.yml:
+  unmanaged: false
 Gemfile:
   required:
     ':development':
