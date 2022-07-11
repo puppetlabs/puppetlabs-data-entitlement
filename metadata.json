@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-data_entitlement",
-  "version": "0.0.1",
+  "version": "0.1.3",
   "author": "puppetlabs",
   "summary": "Used to configure connections with a Puppet Data Entitlement Service, or run a dev stack with docker.",
   "license": "Apache-2.0",
@@ -14,11 +14,11 @@
     },
     {
       "name": "puppetlabs/inifile",
-      "version_requirement": ">= 2.2.1 < 5.0.0"
+      "version_requirement": ">= 2.2.1 < 6.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 7.0.0 < 8.0.0"
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ],
   "operatingsystem_support": [
