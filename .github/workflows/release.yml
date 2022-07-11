@@ -1,14 +1,12 @@
-name: Publish Module
+name: "Publish module"
 
 on:
-  push:
-    tags:
-      - "*.*.*"
-
+  workflow_dispatch:
+  
 jobs:
-  publish-module:
-    name: Tag Release and Publish to Forge
-    runs-on: ubuntu-latest
+  create-github-release:
+    name: Deploy GitHub Release
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -16,38 +14,34 @@ jobs:
           ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
-      - name: Set Metadata
-        run: 'cat ./metadata.json | jq .version=\"${GITHUB_REF##*/}\" > ./md.json && mv ./md.json metadata.json'
       - name: Get Version
         id: gv
         run: |
           echo "::set-output name=ver::$(jq --raw-output .version metadata.json)"
-      - name: Install the PDK
-        run: |
-          source /etc/os-release
-          wget https://apt.puppet.com/puppet-tools-release-${UBUNTU_CODENAME}.deb
-          sudo dpkg -i puppet-tools-release-${UBUNTU_CODENAME}.deb
-          rm -f puppet-tools-release-${UBUNTU_CODENAME}.deb
-          sudo apt-get update
-          sudo apt-get install pdk
-          pdk bundle install
-      - name: Validate Docs
-        run: |
-          set -e
-          documentation=$(pdk bundle exec puppet strings generate --format markdown)
-          if [ $(echo $documentation | grep -Ec "[1-9]+ undocumented|\[warn\]") -gt 0 ]; then
-            echo "Please resolve documentation issues detected below:"
-            echo $documentation
-            exit 1
-          fi
-      - name: Tag Release
-        uses: ncipollo/release-action@v1
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ steps.gv.outputs.ver }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: "v${{ steps.gv.outputs.ver }}"
           draft: false
           prerelease: false
-      - name: Build Module
-        run: pdk build
-      - name: Push to Forge
-        run: pdk release publish --forge-token ${{ secrets.FORGE_API_KEY }} --force
+
+  deploy-forge:
+    name: Deploy to Forge
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+      - name: "PDK Build"
+        uses: docker://puppet/pdk:nightly
+        with:
+          args: 'build'
+      - name: "Push to Forge"
+        uses: docker://puppet/pdk:nightly
+        with:
+          args: 'release publish --forge-token ${{ secrets.FORGE_API_KEY }} --force'
