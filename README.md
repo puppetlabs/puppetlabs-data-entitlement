@@ -44,16 +44,6 @@ Also, if this module is installed on a node, an `data_entitlement` fact is inclu
 
 This module is documented via `pdk bundle exec puppet strings generate --format markdown`. Please see [REFERENCE.md](REFERENCE.md) for more info.
 
-## Releases
-
-To release a new version of the module, run the Auto release Github
-Action. It will generate new documentation, update the changelogs, and bump the
-version based on the labels on the PRs included in the release. It will open a
-PR, which should be reviewed and merged.
-
-Once the release prep has been merged to the main branch, run the Publish
-module action to tag the release and release it to the Forge.
-
 ## Changelog
 
 [CHANGELOG.md](CHANGELOG.md) is generated prior to each release via `pdk bundle exec rake changelog`. This process relies on labels that are applied to each pull request.
