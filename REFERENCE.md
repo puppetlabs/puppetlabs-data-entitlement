@@ -798,7 +798,7 @@ the `submit_only_server_urls` setting of PuppetDB to have it send data as
 if the HDP server was another instance of PuppetDB. This method should only
 be used when the facts terminus method cannot be.
 
-Default value: `'facts_terminus'`
+Default value: `'pdb_submit_only_server_urls'`
 
 ##### <a name="facts_terminus"></a>`facts_terminus`
 
@@ -860,85 +860,53 @@ This class takes care of configuring a node to run an HDP Proxy/Gateway.
 ##### Configure via Hiera
 
 ```puppet
-include data_entitlement::app_stack
-```
-
-##### Manage the docker group elsewhere
-
-```puppet
-realize(Group['docker'])
-
-class { 'data_entitlement::app_stack':
-  dns_name            => 'http://data_entitlement-app.example.com',
-  create_docker_group => false,
-  require             => Group['docker'],
-}
+include data_entitlement::proxy
 ```
 
 #### Parameters
 
 The following parameters are available in the `data_entitlement::proxy` class:
 
-* [`data_entitlement_port`](#data_entitlement_port)
-* [`data_entitlement_user`](#data_entitlement_user)
-* [`image_repository`](#image_repository)
-* [`image_prefix`](#image_prefix)
+* [`port`](#port)
+* [`user`](#user)
 * [`ca_server`](#ca_server)
 * [`allow_trust_on_first_use`](#allow_trust_on_first_use)
+* [`ssl_dir`](#ssl_dir)
 * [`ca_cert_file`](#ca_cert_file)
 * [`key_file`](#key_file)
 * [`cert_file`](#cert_file)
-* [`client_ca_cert_file`](#client_ca_cert_file)
-* [`client_key_file`](#client_key_file)
-* [`client_cert_file`](#client_cert_file)
 * [`dns_name`](#dns_name)
 * [`dns_alt_names`](#dns_alt_names)
 * [`version`](#version)
-* [`extra_hosts`](#extra_hosts)
 * [`prometheus_namespace`](#prometheus_namespace)
 * [`token`](#token)
 * [`data_entitlement_address`](#data_entitlement_address)
-* [`region`](#region)
-* [`organization`](#organization)
+* [`package`](#package)
+* [`service`](#service)
+* [`service_status`](#service_status)
+* [`service_enabled`](#service_enabled)
 
-##### <a name="data_entitlement_port"></a>`data_entitlement_port`
+##### <a name="port"></a>`port`
 
 Data type: `Integer`
 
-Port to access HDP upload service
+Port to run HDP upload service on
+Defaults to 9091
 
 Default value: `9091`
 
-##### <a name="data_entitlement_user"></a>`data_entitlement_user`
+##### <a name="user"></a>`user`
 
 Data type: `String[1]`
 
 User to run HDP proxy as.
-Set to puppet if certname == dns_name
+Defaults to hdp-proxy
 
-Default value: `'11223'`
-
-##### <a name="image_repository"></a>`image_repository`
-
-Data type: `Optional[String[1]]`
-
-Image repository to pull images from - defaults to dockerhub.
-Can be used for airgapped environments/testing environments
-
-Default value: ``undef``
-
-##### <a name="image_prefix"></a>`image_prefix`
-
-Data type: `String`
-
-Prefix that comes before each image
-Can be used for easy name spacing under the same repository
-
-Default value: `'puppet/hdp-'`
+Default value: `'hdp-proxy'`
 
 ##### <a name="ca_server"></a>`ca_server`
 
-Data type: `Optional[String[1]]`
+Data type: `String[1]`
 
 URL of Puppet CA Server. If no keys/certs are provided, then
 HDP will attempt to provision its own certs and get them signed.
@@ -946,7 +914,7 @@ Either this or ca_cert_file/key_file/cert_file can be specified.
 If autosign is not enabled, HDP will wait for the certificate to be signed
 by a puppet administrator
 
-Default value: ``undef``
+Default value: `'puppet'`
 
 ##### <a name="allow_trust_on_first_use"></a>`allow_trust_on_first_use`
 
@@ -957,59 +925,43 @@ Since the HDP doesn't have any CA before starting this process, it will automati
 ca_server. If you don't explicitly set this value to true, then this module will not deploy an HDP installation without being given
 ca_cert_file, key_file, and cert_file.
 
-Default value: ``true``
+Default value: ``false``
+
+##### <a name="ssl_dir"></a>`ssl_dir`
+
+Data type: `String[1]`
+
+The ssl dir for certificates
+Defaults to /etc/puppetlabs/hdp-proxy/ssl
+
+Default value: `'/etc/puppetlabs/hdp-proxy/ssl'`
 
 ##### <a name="ca_cert_file"></a>`ca_cert_file`
 
-Data type: `Optional[String[1]]`
+Data type: `String[1]`
 
 CA certificate to validate connecting clients
 This or ca_server can be specified
 
-Default value: ``undef``
+Default value: `"${data_entitlement::proxy::ssl_dir}/ca.cert.pem"`
 
 ##### <a name="key_file"></a>`key_file`
 
-Data type: `Optional[String[1]]`
+Data type: `String[1]`
 
 Private key for cert_file - pem encoded.
 This or ca_server can be specified
 
-Default value: ``undef``
+Default value: `"${data_entitlement::proxy::ssl_dir}/data-ingestion.key.pem"`
 
 ##### <a name="cert_file"></a>`cert_file`
 
-Data type: `Optional[String[1]]`
+Data type: `String[1]`
 
 Puppet PKI cert file - pem encoded.
 This or ca_server can be specified
 
-Default value: ``undef``
-
-##### <a name="client_ca_cert_file"></a>`client_ca_cert_file`
-
-Data type: `Optional[String[1]]`
-
-When submitting to the remote HDP, use this CA to validate the server.
-Should not be used in production - system CAs are fine.
-
-Default value: ``undef``
-
-##### <a name="client_key_file"></a>`client_key_file`
-
-Data type: `Optional[String[1]]`
-
-When submitting to the remote HDP, use this key file as client auth.
-
-Default value: ``undef``
-
-##### <a name="client_cert_file"></a>`client_cert_file`
-
-Data type: `Optional[String[1]]`
-
-When submitting to the remote HDP, use this cert file as client auth.
-
-Default value: ``undef``
+Default value: `"${data_entitlement::proxy::ssl_dir}/data-ingestion.cert.pem"`
 
 ##### <a name="dns_name"></a>`dns_name`
 
@@ -1018,6 +970,8 @@ Data type: `String[1]`
 Name that puppet server will find HDP at.
 Should match the names in cert_file if provided.
 If ca_server is used instead, this name will be used as certname.
+
+Default value: `'hdp-proxy'`
 
 ##### <a name="dns_alt_names"></a>`dns_alt_names`
 
@@ -1029,21 +983,12 @@ Default value: `[]`
 
 ##### <a name="version"></a>`version`
 
-Data type: `Optional[String[1]]`
+Data type: `String[1]`
 
 The version to use of the HDP Proxy.
 Defaults to latest
 
 Default value: `'latest'`
-
-##### <a name="extra_hosts"></a>`extra_hosts`
-
-Data type: `Hash[String[1], String[1]]`
-
-This parameter can be used to set hostname mappings in docker-compose file.
-Can be used to mimic the /etc/hosts techniques commonly used in puppet.
-
-Default value: `{}`
 
 ##### <a name="prometheus_namespace"></a>`prometheus_namespace`
 
@@ -1052,7 +997,7 @@ Data type: `String[1]`
 The HDP data service exposes some internal prometheus metrics.
 This variable can be used to change the HDP's prom metric namespace.
 
-Default value: `'data_entitlement'`
+Default value: `'hdp_proxy'`
 
 ##### <a name="token"></a>`token`
 
@@ -1066,25 +1011,43 @@ Data type: `Stdlib::HTTPUrl`
 
 The URL of the HDP endpoint to send data to.
 
-##### <a name="region"></a>`region`
+Default value: `'https://hdp-upload-staging.prod.paas.puppet.net'`
 
-Data type: `Optional[String[1]]`
+##### <a name="package"></a>`package`
 
-A region UUID for an HDP region.
-The HDP Proxy will attempt to submit this data under this region if it is permitted to submit data under multiple regions,
-or the HDP service is set to "relaxed" auth.
+Data type: `String[1]`
 
-Default value: ``undef``
+The HDP proxy package name
+Defaults to hdp-proxy
 
-##### <a name="organization"></a>`organization`
+Default value: `'hdp-proxy'`
 
-Data type: `Optional[String[1]]`
+##### <a name="service"></a>`service`
 
-An organization UUID for HDP.
-The HDP Proxy will attempt to submit its data under this organization,
-but the HDP service will not respect this unless it is in "relaxed" auth mode (which, if you're reading this, it's not).
+Data type: `String[1]`
 
-Default value: ``undef``
+The name of the HDP proxy service.
+Defaults to hdp-proxy
+
+Default value: `'hdp-proxy'`
+
+##### <a name="service_status"></a>`service_status`
+
+Data type: `String[1]`
+
+Indicates whether the HDP proxy service should be running or stopped
+Defaults to running
+
+Default value: `'running'`
+
+##### <a name="service_enabled"></a>`service_enabled`
+
+Data type: `Boolean`
+
+Indicates whether the HDP proxy service should be enabled
+Defaults to true
+
+Default value: ``true``
 
 ### <a name="data_entitlementresource_collector"></a>`data_entitlement::resource_collector`
 
